@@ -18,8 +18,7 @@ else
     echo "protoc-gen-go-grpc is already installed."
 fi
 
-# Add Go binaries to PATH
-export PATH="$PATH:$(go env GOPATH)/bin"
+
 
 # Directory containing .proto files
 TRACEE_PROTOS="../../api/v1beta1/*.proto"

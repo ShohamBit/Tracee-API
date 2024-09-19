@@ -1,51 +1,60 @@
-/*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
 
 import (
+	"fmt"
+	"log"
 	"os"
 
 	"github.com/spf13/cobra"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
+var (
+	port        string
+	defaultPort = "4466"
+	conn        *grpc.ClientConn
+)
 
-
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "Tracee-API",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
-}
-
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	err := rootCmd.Execute()
-	if err != nil {
-		os.Exit(1)
-	}
+	Short: "This is the client side for tracee",
+	Long: `Tracee client is the api for tracee.
+	Tracee client can serve you many options of requests you can ask from tracee`,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		conn = connect()
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		// You can add some default logic here if needed
+		fmt.Println("Root command executed")
+	},
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.Tracee-API.yaml)")
+	// commands
+	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(metricsCmd)
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//flags
+	rootCmd.PersistentFlags().StringVarP(&port, "port", "p", defaultPort, "Port to connect to the remote server")
 }
 
+func connect() *grpc.ClientConn {
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
+	fmt.Printf("Connecting to server on port %s...\n", port)
+	conn, err := grpc.Dial(":"+port, opts...)
+	if err != nil {
+		log.Fatalf("fail to dial: %v", err)
+	}
+	fmt.Printf("Connected to server \n")
+	return conn
+}
+
+func Execute() {
+	if err := rootCmd.Execute(); err != nil {
+		os.Exit(1)
+	}
+}
