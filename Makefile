@@ -1,37 +1,44 @@
-.PHONY: all
+.PHONY: all | env
 # Default target
-all: build install
+all: tracee-client
 
+#
+#tools
+#
+CMD_MKDIR ?= mkdir
+CMD_GO ?= go
+
+.PHONY: env
+env:
+	@echo "CMD_MKDIR                $(CMD_MKDIR)"
+.PHONY: help
+help:
+
+#
 # Variables
-BINARY_NAME=client
+#
+
 SRC_DIR=./...
-BUILD_DIR=dist
+#
+# output dir
+#
 
-# Create the build directory if it doesn't exist
-$(BUILD_DIR):
-	mkdir -p $@
+OUTPUT_DIR =./dist
 
-# Build the binary
-build: $(BUILD_DIR)  # Ensure BUILD_DIR exists before building
-	@echo "Building the binary..."
-	go build -o $(BUILD_DIR) $(SRC_DIR)
+$(OUTPUT_DIR):
+#
+	@$(CMD_MKDIR) -p $@
 
-# Install the binary
-install:
-	@echo "Installing the binary..."
-	go install $(SRC_DIR)
 
-# Clean the build
+
+.PHONY: tracee-client
+tracee-client:
+	$(CMD_GO) build \
+	-o $(OUTPUT_DIR) $(SRC_DIR)
+	$(CMD_GO) install $(SRC_DIR)
+	
+
+.PHONY: clean
 clean:
 	@echo "Cleaning up..."
-	rm -f $(BUILD_DIR)/$(BINARY_NAME)
-
-# Help command
-help:
-	@echo "Makefile commands:"
-	@echo "  make build    Build the binary"
-	@echo "  make install  Install the binary"
-	@echo "  make clean    Remove the built binary"
-	@echo "  make help     Show this help message"
-
-
+	rm -rf $(OUTPUT_DIR)
