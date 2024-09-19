@@ -1,0 +1,6 @@
+policy:
+  - ../policies/policy.yaml
+output:
+  - none
+grpc-listen-addr: 
+  - tcp:50051

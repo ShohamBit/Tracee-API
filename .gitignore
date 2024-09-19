@@ -1,0 +1,9 @@
+# dev related files
+.vscode
+.idea
+coverage.txt
+compile_commands.json
+.cache*
+.trunk*
+.vagrant
+goenv.mk
