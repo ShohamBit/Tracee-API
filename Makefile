@@ -1,44 +1,44 @@
-.PHONY: all | env
-# Default target
-all: tracee-client
-
-#
-#tools
-#
-CMD_MKDIR ?= mkdir
-CMD_GO ?= go
-
-.PHONY: env
-env:
-	@echo "CMD_MKDIR                $(CMD_MKDIR)"
-.PHONY: help
-help:
-
-#
 # Variables
-#
+NAME := TraceeClient
+BUILD_DIR := ./dist
+SRC := ./...
 
-SRC_DIR=./...
-#
-# output dir
-#
+# Default target: create build dir, build, and install
+.PHONY: all
+all: $(BUILD_DIR) build install
 
-OUTPUT_DIR =./dist
+# Build target
+.PHONY: build
+build: ## Build the Go binary
+	@echo "Building $(NAME)..."
+	go build -o $(BUILD_DIR) $(SRC)
 
-$(OUTPUT_DIR):
-#
-	@$(CMD_MKDIR) -p $@
+# Install target
+.PHONY: install
+install: ## Build and install the binary
+	@echo "Installing $(NAME)..."
+	go install $(SRC)
 
+# Directory creation
+$(BUILD_DIR):
+	@echo "Creating build directory..."
+	mkdir -p $(BUILD_DIR)
 
-
-.PHONY: tracee-client
-tracee-client:
-	$(CMD_GO) build \
-	-o $(OUTPUT_DIR) $(SRC_DIR)
-	$(CMD_GO) install $(SRC_DIR)
-	
-
+# Clean target
 .PHONY: clean
-clean:
+clean: ## Remove binary and build directory
 	@echo "Cleaning up..."
-	rm -rf $(OUTPUT_DIR)
+	rm -rf $(BUILD_DIR)
+
+# Environment target
+.PHONY: env
+env: ## Display Go environment variables
+	@echo "Go environment variables:"
+	go env
+
+# Help target
+.PHONY: help
+help: ## Show this help message
+	@echo "Available make targets:"
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} \
+    /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)

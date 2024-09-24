@@ -1,4 +1,4 @@
-module Tracee-API
+module TraceeClient
 
 go 1.23.1
 

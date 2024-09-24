@@ -1,10 +1,9 @@
 /*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-
+Copyright © 2024 Shoham Yosef Bitton <shohambit@gmail.com>
 */
 package main
 
-import "Tracee-API/cmd"
+import "TraceeClient/cmd"
 
 func main() {
 	cmd.Execute()
