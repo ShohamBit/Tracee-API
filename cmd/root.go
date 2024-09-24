@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
@@ -20,15 +19,19 @@ var (
 
 	rootCmd = &cobra.Command{
 		Use:   "TraceeClient",
-		Short: "This is the client side for tracee",
-		Long: `Tracee client is the api for tracee.
-		Tracee client can serve you many options of requests you can ask from tracee`,
-		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			conn = connect()
-		},
+		Short: "TraceeClient is a CLI tool for tracee",
+		Long:  `Tracee client is the client for tracee api server.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			// You can add some default logic here if needed
-			fmt.Println("Root command executed")
+			cmd.Help()
+		},
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			// Don't run the connect function for the root command itself
+			if cmd == cmd.Root() {
+				return
+			}
+
+			// For all other subcommands, run the connect function
+			conn = connect()
 		},
 	}
 )
@@ -38,6 +41,7 @@ func init() {
 	// commands
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(metricsCmd)
+	rootCmd.AddCommand(enableEventCmd)
 
 	//flags
 	rootCmd.PersistentFlags().StringVarP(&port, "port", "p", defaultPort, "Port to connect to the remote server")
@@ -46,27 +50,16 @@ func init() {
 }
 
 func connect() *grpc.ClientConn {
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
-	fmt.Printf("Connecting to server on %s and port %s...\n", ip, port)
-	addr := fmt.Sprintf("%s:%s", ip, port)
+	var addr string = ip + ":" + port
+	fmt.Printf("Connecting to server on %s \n", addr)
 	//check if server is up
-	isServeUp := func(ip string, port string) bool {
-		addr := fmt.Sprintf("%s:%s", ip, port)
-		conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(2*time.Second))
-		if err != nil {
-			log.Fatalf("server is down %v", err)
-			return false // Server is not reachable
-		}
-		defer conn.Close()
-		return true // Server is reachable
-	}
-	isServeUp(ip, port)
-	//connect to server
-	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(addr, opts...)
 	if err != nil {
-		log.Fatalf("No connection established.: %v", err)
+		log.Fatalf("server is down %v", err)
 	}
-
 	fmt.Printf("Connected to server \n")
 	return conn
 
