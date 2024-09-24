@@ -20,10 +20,7 @@ var metricsCmd = &cobra.Command{
 
 // displayMetrics fetches and prints Tracee metrics
 func displayMetrics() {
-	if conn == nil {
-		log.Fatal("No connection established. Please run the root command to connect first.")
-	}
-
+	//create diagnostic grpc client
 	client := pb.NewDiagnosticServiceClient(conn)
 	metrics, err := client.GetMetrics(context.Background(), &pb.GetMetricsRequest{})
 	if err != nil {

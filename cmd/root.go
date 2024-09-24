@@ -49,22 +49,22 @@ func connect() *grpc.ClientConn {
 
 	fmt.Printf("Connecting to server on %s and port %s...\n", ip, port)
 	addr := fmt.Sprintf("%s:%s", ip, port)
-
+	//check if server is up
 	isServeUp := func(ip string, port string) bool {
 		addr := fmt.Sprintf("%s:%s", ip, port)
 		conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithTimeout(2*time.Second))
 		if err != nil {
-			log.Fatalf("did not connect: %v", err)
+			log.Fatalf("server is down %v", err)
 			return false // Server is not reachable
 		}
 		defer conn.Close()
 		return true // Server is reachable
 	}
 	isServeUp(ip, port)
-
+	//connect to server
 	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		log.Fatalf("No connection established.: %v", err)
 	}
 
 	fmt.Printf("Connected to server \n")
