@@ -19,15 +19,12 @@ var versionCmd = &cobra.Command{
 }
 
 func displayVersion() {
-	if conn == nil {
-		log.Fatal("No connection established. Please run the root command to connect first.")
-	}
-
+	// create Tracee grpc client
 	client := pb.NewTraceeServiceClient(conn)
 	response, err := client.GetVersion(context.Background(), &pb.GetVersionRequest{})
 	if err != nil {
 		log.Fatalf("Error getting version: %v", err)
 	}
-
+	//display version
 	fmt.Printf("Version: %+v\n", response.Version)
 }
