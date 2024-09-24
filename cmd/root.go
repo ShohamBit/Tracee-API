@@ -53,7 +53,7 @@ func connect() *grpc.ClientConn {
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
-	var addr string = ip + ":" + port
+	var addr string = fmt.Sprintf("%s:%s", ip, port)
 	fmt.Printf("Connecting to server on %s \n", addr)
 	//check if server is up
 	conn, err := grpc.NewClient(addr, opts...)
