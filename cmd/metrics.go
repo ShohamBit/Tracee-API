@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"TraceeClient/client"
 	"context"
 	"fmt"
 	"log"
@@ -20,21 +21,26 @@ var metricsCmd = &cobra.Command{
 
 // displayMetrics fetches and prints Tracee metrics
 func displayMetrics() {
-	//create diagnostic grpc client
-	client := pb.NewDiagnosticServiceClient(conn)
-	metrics, err := client.GetMetrics(context.Background(), &pb.GetMetricsRequest{})
+
+	//create service client
+	client, err := client.NewDiagnosticClient(serverInfo)
 	if err != nil {
-		log.Fatalf("Error fetching metrics: %v", err)
+		log.Fatalf("Error creating client: %v", err)
+	}
+	//get metrics
+	response, err := client.GetMetrics(context.Background(), &pb.GetMetricsRequest{})
+	if err != nil {
+		log.Fatalf("Error getting version: %v", err)
 	}
 
 	// Display the metrics
-	fmt.Println("EventCount:", metrics.EventCount)
-	fmt.Println("EventsFiltered:", metrics.EventsFiltered)
-	fmt.Println("NetCapCount:", metrics.NetCapCount)
-	fmt.Println("BPFLogsCount:", metrics.BPFLogsCount)
-	fmt.Println("ErrorCount:", metrics.ErrorCount)
-	fmt.Println("LostEvCount:", metrics.LostEvCount)
-	fmt.Println("LostWrCount:", metrics.LostWrCount)
-	fmt.Println("LostNtCapCount:", metrics.LostNtCapCount)
-	fmt.Println("LostBPFLogsCount:", metrics.LostBPFLogsCount)
+	fmt.Println("EventCount:", response.EventCount)
+	fmt.Println("EventsFiltered:", response.EventsFiltered)
+	fmt.Println("NetCapCount:", response.NetCapCount)
+	fmt.Println("BPFLogsCount:", response.BPFLogsCount)
+	fmt.Println("ErrorCount:", response.ErrorCount)
+	fmt.Println("LostEvCount:", response.LostEvCount)
+	fmt.Println("LostWrCount:", response.LostWrCount)
+	fmt.Println("LostNtCapCount:", response.LostNtCapCount)
+	fmt.Println("LostBPFLogsCount:", response.LostBPFLogsCount)
 }
