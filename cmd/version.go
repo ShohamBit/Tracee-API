@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"TraceeClient/client"
+	"github.com/ShohamBit/TraceeClient/client"
 	"context"
 	"fmt"
 	"log"

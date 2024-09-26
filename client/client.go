@@ -1,7 +1,7 @@
 package client
 
 import (
-	"TraceeClient/models"
+	"github.com/ShohamBit/TraceeClient/models"
 	"fmt"
 	"log"
 
@@ -10,13 +10,13 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-// TraceeClient holds the gRPC connection and service client.
+// github.com/ShohamBit/TraceeClient holds the gRPC connection and service client.
 type serviceClient struct {
 	conn   *grpc.ClientConn
 	client pb.TraceeServiceClient
 }
 
-// TraceeClient holds the gRPC connection and diagnostic client.
+// github.com/ShohamBit/TraceeClient holds the gRPC connection and diagnostic client.
 type diagnosticClient struct {
 	conn   *grpc.ClientConn
 	client pb.DiagnosticServiceClient

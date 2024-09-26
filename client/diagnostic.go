@@ -1,14 +1,14 @@
 package client
 
 import (
-	"TraceeClient/models"
+	"github.com/ShohamBit/TraceeClient/models"
 	"context"
 	"log"
 
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
 )
 
-// NewTraceeClient initializes a new gRPC client connection.
+// Newgithub.com/ShohamBit/TraceeClient initializes a new gRPC client connection.
 func NewDiagnosticClient(serverInfo models.ServerInfo) (*diagnosticClient, error) {
 	conn, err := connectToServer(serverInfo)
 	if err != nil {
