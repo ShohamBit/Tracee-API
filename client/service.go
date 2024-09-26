@@ -36,3 +36,7 @@ if you want to add new options to the client, under this section is where you sh
 func (tc *serviceClient) GetVersion(ctx context.Context, req *pb.GetVersionRequest) (*pb.GetVersionResponse, error) {
 	return tc.client.GetVersion(ctx, req)
 }
+
+func (tc *serviceClient) EnableEvent(ctx context.Context, req *pb.EnableEventRequest) (*pb.EnableEventResponse, error) {
+	return tc.client.EnableEvent(ctx, req)
+}

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"TraceeClient/client"
 	"context"
 	"fmt"
 	"log"
@@ -21,16 +22,15 @@ var enableEventCmd = &cobra.Command{
 
 func enableEvents(eventNames []string) {
 	// create Tracee grpc client
-	client := pb.NewTraceeServiceClient(conn)
-
-	for _, eventName := range eventNames {
-		enableEvent(client, eventName)
-	}
-}
-func enableEvent(client pb.TraceeServiceClient, eventName string) {
-	_, err := client.EnableEvent(context.Background(), &pb.EnableEventRequest{Name: eventName})
+	client, err := client.NewServiceClient(serverInfo)
 	if err != nil {
-		log.Fatalf("Error enabling event: %v", err)
+		log.Fatalf("Error creating client: %v", err)
 	}
-	fmt.Printf("Enabled event %s\n", eventName)
+	for _, eventName := range eventNames {
+		_, err := client.EnableEvent(context.Background(), &pb.EnableEventRequest{Name: eventName})
+		if err != nil {
+			log.Fatalf("Error enabling event: %v", err)
+		}
+		fmt.Printf("Enabled event: %s\n", eventName)
+	}
 }
