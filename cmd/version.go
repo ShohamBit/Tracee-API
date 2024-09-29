@@ -23,14 +23,14 @@ func displayVersion(cmd *cobra.Command, _ []string) {
 	//create service client
 	client, err := client.NewServiceClient(serverInfo)
 	if err != nil {
-		cmd.PrintErrf("Error creating client: %v", err)
+		cmd.PrintErrln("Error creating client: ", err)
 	}
 	defer client.CloseConnection()
 	//get version
 	response, err := client.GetVersion(context.Background(), &pb.GetVersionRequest{})
 	if err != nil {
-		cmd.PrintErrf("Error getting version: %v", err)
+		cmd.PrintErrln("Error getting version: ", err)
 	}
 	//display version
-	cmd.Print("Version: ", response.Version)
+	cmd.Println("Version: ", response.Version)
 }

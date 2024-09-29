@@ -7,10 +7,10 @@ var baseCmd = &cobra.Command{
 	Short: "short about the use",
 	Long:  "long about the use",
 	Run: func(cmd *cobra.Command, args []string) {
-		base()
+		base(cmd, args)
 	},
 }
 
-func base() {
+func base(cmd *cobra.Command, _ []string) {
 
 }

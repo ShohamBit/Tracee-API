@@ -31,6 +31,7 @@ func TestVersionCommand(t *testing.T) {
 	var buf bytes.Buffer
 	//rootCmd := rootCmd
 	rootCmd.SetOut(&buf)
+	rootCmd.SetErr(&buf)
 
 	// Execute the version command
 	rootCmd.SetArgs([]string{"version"})

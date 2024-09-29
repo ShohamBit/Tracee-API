@@ -1,9 +1,10 @@
 package client
 
 import (
-	"github.com/ShohamBit/TraceeClient/models"
 	"fmt"
 	"log"
+
+	"github.com/ShohamBit/TraceeClient/models"
 
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
 	"google.golang.org/grpc"
@@ -23,7 +24,6 @@ type diagnosticClient struct {
 }
 
 func connectToServer(serverInfo models.ServerInfo) (*grpc.ClientConn, error) {
-	fmt.Printf("create a new service client\n")
 	fmt.Printf("Connecting to server on %s...\n", serverInfo.Address())
 
 	//connect to server
