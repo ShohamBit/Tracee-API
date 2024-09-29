@@ -42,3 +42,8 @@ help: ## Show this help message
 	@echo "Available make targets:"
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} \
     /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
+
+#test target
+.PHONY: test
+test: #test tracee client
+	go test ./... -v

@@ -36,8 +36,18 @@ func init() {
 
 }
 
+// run root command
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
+}
+
+// expose root command
+func NewRootCommand() *cobra.Command {
+	return rootCmd
+}
+
+func GetServerInfo() models.ServerInfo {
+	return serverInfo
 }
