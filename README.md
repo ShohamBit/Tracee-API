@@ -17,23 +17,26 @@ please refer to [Tracee Docs about Configuration files](https://aquasecurity.git
 
 for example a short config yaml file:
 ```yaml
-grpc-listen-addr:
-    - tcp:50051
+grpc-listen-addr: tcp:50051
 ```
 ### compile Tracee Client
-In order to use Tracee client you need to compile Tracee client you can do it simpley by runnig this:
+In order to use Tracee client you need to compile Tracee client you can do it  by running:
+
 ```bash 
-make tracee-client
+make 
 ```
+
 ## Tracee API Client
 
-After you run tracee with grpc option on, you need to tracee client.
-
-you can tracee client like
+After you compile Tracee client you can run it
 
 ```bash
-how to run tracee client 
+TraceeClient 
 ```
+
+It will print the help commend for you to view how you can interact with the client.
+
+you can view more about each commend in the [docs section](#add docs section)
 
 
 
