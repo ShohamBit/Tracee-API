@@ -14,8 +14,8 @@ var (
 	defaultPort = "4466"
 
 	rootCmd = &cobra.Command{
-		Use:   "github.com/ShohamBit/TraceeClient",
-		Short: "github.com/ShohamBit/TraceeClient is a CLI tool for tracee",
+		Use:   "TraceeClient",
+		Short: "TraceeClient is a CLI tool for tracee",
 		Long:  `Tracee client is the client for tracee api server.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.Help()
