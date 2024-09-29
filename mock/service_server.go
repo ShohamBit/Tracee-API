@@ -5,19 +5,14 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/ShohamBit/TraceeClient/cmd"
 	"github.com/ShohamBit/TraceeClient/models"
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
 	"google.golang.org/grpc"
 )
 
-/*
-	service server
-*/
-
 var (
 	ExpectedVersion string            = "v0.22.0-15-gd09d7fca0d\n" // Match the output format
-	serverInfo      models.ServerInfo = models.ServerInfo{IP: cmd.GetServerInfo().IP, Port: cmd.GetServerInfo().Port}
+	serverInfo      models.ServerInfo = models.ServerInfo{IP: models.DefaultIP, Port: models.DefaultPort}
 )
 
 // MockServiceServer implements the gRPC server interface for testing
@@ -44,19 +39,10 @@ func StartMockServiceServer() (*grpc.Server, error) {
 	return s, nil
 }
 
-/*
-mock server functions
-*/
-
 func (s *MockServiceServer) GetVersion(ctx context.Context, req *pb.GetVersionRequest) (*pb.GetVersionResponse, error) {
 	// Return a mock version response
 	return &pb.GetVersionResponse{Version: ExpectedVersion}, nil
 }
-
-/*
-	data source server
-*/
-
-/*
-	diagnostic server
-*/
+func (s *MockServiceServer) EnableEvent(ctx context.Context, req *pb.EnableEventRequest) (*pb.EnableEventResponse, error) {
+	return &pb.EnableEventResponse{}, nil
+}

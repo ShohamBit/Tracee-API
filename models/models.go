@@ -10,3 +10,8 @@ type ServerInfo struct {
 func (s *ServerInfo) Address() string {
 	return s.IP + ":" + s.Port
 }
+
+var (
+	DefaultIP   = "localhost"
+	DefaultPort = "4466"
+)
