@@ -17,7 +17,7 @@ var enableEventCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// Check if args are provided
 		if len(args) == 0 {
-			cmd.Println("Error: no event names provided. Please specify at least one event to enable.")
+			cmd.PrintErrln("Error: no event names provided. Please specify at least one event to enable.")
 			return // Exit if no arguments
 		}
 		enableEvents(cmd, args)
