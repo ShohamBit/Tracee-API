@@ -1,14 +1,15 @@
 package client
 
 import (
-	"github.com/ShohamBit/TraceeClient/models"
 	"context"
 	"log"
+
+	"github.com/ShohamBit/TraceeClient/models"
 
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
 )
 
-// Newgithub.com/ShohamBit/TraceeClient initializes a new gRPC client connection.
+// New github.com/ShohamBit/TraceeClient initializes a new gRPC client connection.
 func NewServiceClient(serverInfo models.ServerInfo) (*serviceClient, error) {
 	conn, err := connectToServer(serverInfo)
 	if err != nil {
@@ -39,4 +40,8 @@ func (tc *serviceClient) GetVersion(ctx context.Context, req *pb.GetVersionReque
 
 func (tc *serviceClient) EnableEvent(ctx context.Context, req *pb.EnableEventRequest) (*pb.EnableEventResponse, error) {
 	return tc.client.EnableEvent(ctx, req)
+}
+
+func (tc *serviceClient) StreamEvents(ctx context.Context, req *pb.StreamEventsRequest) (pb.TraceeService_StreamEventsClient, error) {
+	return tc.client.StreamEvents(ctx, req)
 }

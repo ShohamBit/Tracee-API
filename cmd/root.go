@@ -27,6 +27,7 @@ func init() {
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(metricsCmd)
 	rootCmd.AddCommand(enableEventCmd)
+	rootCmd.AddCommand(streamEventsCmd)
 
 	//flags
 	rootCmd.PersistentFlags().StringVarP(&serverInfo.IP, "ip", "i", models.DefaultIP, "IP to connect to the remote server")
