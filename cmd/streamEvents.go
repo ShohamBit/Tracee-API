@@ -34,8 +34,10 @@ func streamEvents(cmd *cobra.Command, args []string) {
 	for {
 		res, err := stream.Recv()
 		if err != nil {
+			if err.Error() == "EOF" {
+				break
+			}
 			cmd.PrintErrln("Error receiving streamed event: ", err)
-			break
 		}
 		cmd.Println(res.Event)
 	}

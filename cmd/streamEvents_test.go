@@ -17,21 +17,19 @@ var StreamEventTests = []models.TestCase{
 policies:{matched:"policy1"}
 policies:{matched:"policy2"}
 policies:{matched:"policy3"}
-policies:{matched:"policy1"  matched:"policy3"}
-policies:{matched:"policy1"  matched:"policy2"}
-policies:{matched:"policy2"  matched:"policy3"}
-policies:{matched:"policy1"  matched:"policy2"  matched:"policy3"}
-Error receiving streamed event:  EOF
+policies:{matched:"policy1" matched:"policy3"}
+policies:{matched:"policy1" matched:"policy2"}
+policies:{matched:"policy2" matched:"policy3"}
+policies:{matched:"policy1" matched:"policy2" matched:"policy3"}
 `,
 	},
 	{
 		Name: "Single policy",
 		Args: []string{"streamEvents", "policy1"},
 		ExpectedOutput: `policies:{matched:"policy1"}
-policies:{matched:"policy1"  matched:"policy3"}
-policies:{matched:"policy1"  matched:"policy2"}
-policies:{matched:"policy1"  matched:"policy2"  matched:"policy3"}
-Error receiving streamed event:  EOF
+policies:{matched:"policy1" matched:"policy3"}
+policies:{matched:"policy1" matched:"policy2"}
+policies:{matched:"policy1" matched:"policy2" matched:"policy3"}
 `,
 	},
 	{
@@ -39,11 +37,10 @@ Error receiving streamed event:  EOF
 		Args: []string{"streamEvents", "policy1", "policy2"},
 		ExpectedOutput: `policies:{matched:"policy1"}
 policies:{matched:"policy2"}
-policies:{matched:"policy1"  matched:"policy3"}
-policies:{matched:"policy1"  matched:"policy2"}
-policies:{matched:"policy2"  matched:"policy3"}
-policies:{matched:"policy1"  matched:"policy2"  matched:"policy3"}
-Error receiving streamed event:  EOF
+policies:{matched:"policy1" matched:"policy3"}
+policies:{matched:"policy1" matched:"policy2"}
+policies:{matched:"policy2" matched:"policy3"}
+policies:{matched:"policy1" matched:"policy2" matched:"policy3"}
 `,
 	},
 }
