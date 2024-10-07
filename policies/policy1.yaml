@@ -1,0 +1,13 @@
+apiVersion: tracee.aquasec.com/v1beta1
+kind: Policy
+metadata:
+    name: policy1
+    annotations:
+        description: sample overview policy
+spec:
+    scope:
+      - global
+    rules:
+      - event: security_file_open
+        filters:
+        - data.pathname=*dam1*

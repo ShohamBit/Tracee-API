@@ -12,7 +12,8 @@ import (
 /* diagnostic client */
 /* service client */
 var (
-	ExpectedVersion = "Version: v0.22.0-15-gd09d7fca0d\n" // Match the output format
+	//add space before version
+	ExpectedVersion = "Version:  v0.22.0-15-gd09d7fca0d\n" // Match the output format
 
 )
 

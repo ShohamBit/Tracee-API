@@ -6,6 +6,12 @@ type ServerInfo struct {
 	Port string
 }
 
+type TestCase struct {
+	Name           string
+	Args           []string
+	ExpectedOutput string
+}
+
 // Address returns the full server address as IP:Port
 func (s *ServerInfo) Address() string {
 	return s.IP + ":" + s.Port

@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/ShohamBit/TraceeClient/models"
@@ -24,7 +23,7 @@ type diagnosticClient struct {
 }
 
 func connectToServer(serverInfo models.ServerInfo) (*grpc.ClientConn, error) {
-	fmt.Printf("Connecting to server on %s...\n", serverInfo.Address())
+	//fmt.Printf("Connecting to server on %s...\n", serverInfo.Address())
 
 	//connect to server
 	var opts []grpc.DialOption
