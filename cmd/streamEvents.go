@@ -8,9 +8,9 @@ import (
 
 var (
 	streamEventsCmd = &cobra.Command{
-		Use:   "streamEvents",
+		Use:   "streamEvents [policy1] [policy2]...",
 		Short: "Stream events from tracee",
-		Long:  "Stream the events that tracee trace to the client",
+		Long:  "Stream the events that tracee trace",
 		Run: func(cmd *cobra.Command, args []string) {
 			streamEvents(cmd, args)
 		},
