@@ -27,6 +27,7 @@ func init() {
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(metricsCmd)
 	rootCmd.AddCommand(enableEventCmd)
+	rootCmd.AddCommand(disableEventCmd)
 	rootCmd.AddCommand(streamEventsCmd)
 
 	//flags
