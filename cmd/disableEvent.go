@@ -36,7 +36,7 @@ func disableEvents(cmd *cobra.Command, eventNames []string) {
 	for _, eventName := range eventNames {
 		_, err := client.DisableEvent(context.Background(), &pb.DisableEventRequest{Name: eventName})
 		if err != nil {
-			cmd.PrintErrln("Error enabling event:", err)
+			cmd.PrintErrln("Error disabling event:", err)
 			continue // Continue on error with the next event
 		}
 		cmd.Println("Disabled event:", eventName)
