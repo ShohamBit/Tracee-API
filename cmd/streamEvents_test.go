@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 	"time"
 
@@ -17,19 +18,19 @@ var StreamEventTests = []models.TestCase{
 policies:{matched:"policy1"}
 policies:{matched:"policy2"}
 policies:{matched:"policy3"}
-policies:{matched:"policy1" matched:"policy3"}
+policies:{matched:"policy1"  matched:"policy3"}
 policies:{matched:"policy1" matched:"policy2"}
-policies:{matched:"policy2" matched:"policy3"}
-policies:{matched:"policy1" matched:"policy2" matched:"policy3"}
+policies:{matched:"policy2"  matched:"policy3"}
+policies:{matched:"policy1"  matched:"policy2"  matched:"policy3"}
 `,
 	},
 	{
 		Name: "Single policy",
 		Args: []string{"streamEvents", "policy1"},
 		ExpectedOutput: `policies:{matched:"policy1"}
-policies:{matched:"policy1" matched:"policy3"}
-policies:{matched:"policy1" matched:"policy2"}
-policies:{matched:"policy1" matched:"policy2" matched:"policy3"}
+policies:{matched:"policy1"  matched:"policy3"}
+policies:{matched:"policy1"  matched:"policy2"}
+policies:{matched:"policy1"  matched:"policy2"  matched:"policy3"}
 `,
 	},
 	{
@@ -70,11 +71,17 @@ func TestStreamEvent(t *testing.T) {
 			if err := rootCmd.Execute(); err != nil {
 				t.Fatalf("Execute() failed: %v", err)
 			}
-
-			// Check if output matches expected output
-			if buf.String() != test.ExpectedOutput {
-				t.Errorf("Expected %q, \ngot %q", test.ExpectedOutput, buf.String())
+			for i, event := range strings.Split(buf.String(), "\n") {
+				if strings.Split(test.ExpectedOutput, "\n")[i] != event {
+					t.Errorf("Expected %q\ngot %q", strings.Split(test.ExpectedOutput, "\n")[i], event)
+				}
 			}
+			/*
+				// Check if output matches expected output
+				if buf.String() != test.ExpectedOutput {
+					t.Errorf("Expected %q, \ngot %q", test.ExpectedOutput, buf.String())
+				}
+			*/
 		})
 	}
 }

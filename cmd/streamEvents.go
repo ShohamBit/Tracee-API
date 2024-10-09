@@ -34,6 +34,7 @@ func streamEvents(cmd *cobra.Command, args []string) {
 	for {
 		res, err := stream.Recv()
 		if err != nil {
+			//add handle when policy doesn't exist
 			if err.Error() == "EOF" {
 				break
 			}
