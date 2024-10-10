@@ -61,60 +61,44 @@ func (s *MockServiceServer) DisableEvent(ctx context.Context, req *pb.DisableEve
 // and the server will return 8 events in total
 func (s *MockServiceServer) StreamEvents(req *pb.StreamEventsRequest, stream pb.TraceeService_StreamEventsServer) error {
 	// Define mock events to send
-	mockEvents := []*pb.StreamEventsResponse{
-		{Event: generateEvent([]string{""})},
-		{Event: generateEvent([]string{"policy1"})},
-		{Event: generateEvent([]string{"policy2"})},
-		{Event: generateEvent([]string{"policy3"})},
-		{Event: generateEvent([]string{"policy1", "policy3"})},
-		{Event: generateEvent([]string{"policy1", "policy2"})},
-		{Event: generateEvent([]string{"policy2", "policy3"})},
-		{Event: generateEvent([]string{"policy1", "policy2", "policy3"})},
-	}
+	//this create events from policies that the client request for
+	// which means no need to check if you need to stream something
+	mockEvents := CreateEventsFromPolicies(req.Policies)
 
 	// Simulate streaming of events with delays
 	for _, event := range mockEvents {
-		// If the request has policies, filter the events
-		if len(req.Policies) != 0 {
-			if hasAnyMatch(req.Policies, event.Event.Policies.Matched) {
-				if err := stream.Send(event); err != nil {
-					return err
-				}
-			}
-		} else {
-			if err := stream.Send(event); err != nil {
-				return err
-			}
+		if err := stream.Send(event); err != nil {
+			return err
 		}
-		time.Sleep(100 * time.Millisecond) // Simulate delay between events
 
 	}
+	time.Sleep(100 * time.Millisecond) // Simulate delay between events
 	return nil
 }
 
-func hasAnyMatch(arr1, arr2 []string) bool {
-	// Create a map for the second array to store the elements
-	arr2Map := make(map[string]bool)
-
-	// Populate the map with elements from arr2
-	for _, val := range arr2 {
-		arr2Map[val] = true
-	}
-
-	// Check if at least one element in arr1 exists in arr2
-	for _, val := range arr1 {
-		if arr2Map[val] {
-			return true // Return true as soon as we find a match
-		}
-	}
-
-	// No matches found
-	return false
-}
 func generateEvent(policy []string) *pb.Event {
-
 	return &pb.Event{
 		Policies: &pb.Policies{Matched: policy},
 	}
 
+}
+
+// this creates events from policies that the client request for
+func CreateEventsFromPolicies(policy []string) []*pb.StreamEventsResponse {
+	if len(policy) <= 1 {
+		return []*pb.StreamEventsResponse{
+			{Event: generateEvent([]string{""})},
+		}
+	} else {
+		// this nee+ds to be work on
+		return []*pb.StreamEventsResponse{
+			{Event: generateEvent([]string{"policy1"})},
+			{Event: generateEvent([]string{"policy2"})},
+			{Event: generateEvent([]string{"policy3"})},
+			{Event: generateEvent([]string{"policy1", "policy2"})},
+			{Event: generateEvent([]string{"policy1", "policy3"})},
+			{Event: generateEvent([]string{"policy2", "policy3"})},
+			{Event: generateEvent([]string{"policy1", "policy2", "policy3"})},
+		}
+	}
 }

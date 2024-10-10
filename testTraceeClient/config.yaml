@@ -1,3 +1,1 @@
-output:
-  - table
 grpc-listen-addr: tcp:4466

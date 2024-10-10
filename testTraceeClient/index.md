@@ -2,10 +2,12 @@
 
 ## run tracee
 
+__NOTE:__ tracee config file doesn't support: policy, scope, event & capture
+
 ``` bash
-sudo ./dist/tracee \
---config ../TraceeClient/config.yaml \
---policy ../TraceeClient/policies \
+Tracee \
+--config ../path/to/config/config.yaml \
+--policy ../path/to/policies 
 ```
 
 ## run client
@@ -47,7 +49,7 @@ stream events from policy1:
 ./dist/TraceeClient streamEvents policy2
 ```
 
-stream evenet from 2 policies
+stream event from 2 policies
 
 ``` bash
 ./dist/TraceeClient streamEvents policy1 policy2

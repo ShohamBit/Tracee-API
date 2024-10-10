@@ -8,46 +8,30 @@ import (
 
 	"github.com/ShohamBit/TraceeClient/mock"
 	"github.com/ShohamBit/TraceeClient/models"
+	pb "github.com/aquasecurity/tracee/api/v1beta1"
 )
 
+var LoadedPolicies = []string{"policy1", "policy2", "policy3"}
 var StreamEventTests = []models.TestCase{
 	{
-		Name: "No Policies",
-		Args: []string{"streamEvents"}, // Removed the empty string argument
-		ExpectedOutput: `policies:{matched:""}
-policies:{matched:"policy1"}
-policies:{matched:"policy2"}
-policies:{matched:"policy3"}
-policies:{matched:"policy1"  matched:"policy3"}
-policies:{matched:"policy1" matched:"policy2"}
-policies:{matched:"policy2"  matched:"policy3"}
-policies:{matched:"policy1"  matched:"policy2"  matched:"policy3"}
-`,
+		Name:           "No Policies",
+		Args:           []string{"streamEvents"}, // Removed the empty string argument
+		ExpectedOutput: mock.CreateEventsFromPolicies([]string{}),
 	},
 	{
-		Name: "Single policy",
-		Args: []string{"streamEvents", "policy1"},
-		ExpectedOutput: `policies:{matched:"policy1"}
-policies:{matched:"policy1"  matched:"policy3"}
-policies:{matched:"policy1"  matched:"policy2"}
-policies:{matched:"policy1"  matched:"policy2"  matched:"policy3"}
-`,
+		Name:           "Single policy",
+		Args:           []string{"streamEvents", LoadedPolicies[0]},
+		ExpectedOutput: mock.CreateEventsFromPolicies([]string{LoadedPolicies[0]}),
 	},
 	{
-		Name: "Multiple policies",
-		Args: []string{"streamEvents", "policy1", "policy2"},
-		ExpectedOutput: `policies:{matched:"policy1"}
-policies:{matched:"policy2"}
-policies:{matched:"policy1" matched:"policy3"}
-policies:{matched:"policy1" matched:"policy2"}
-policies:{matched:"policy2" matched:"policy3"}
-policies:{matched:"policy1" matched:"policy2" matched:"policy3"}
-`,
+		Name:           "Multiple policies",
+		Args:           []string{"streamEvents", LoadedPolicies[0], LoadedPolicies[1]},
+		ExpectedOutput: mock.CreateEventsFromPolicies(LoadedPolicies[0:2]),
 	},
 }
 
 func TestStreamEvent(t *testing.T) {
-	for _, test := range StreamEventTests { // Corrected the variable name
+	for _, test := range StreamEventTests {
 		t.Run(test.Name, func(t *testing.T) {
 			// Start the mock server
 			mockServer, err := mock.StartMockServiceServer()
@@ -71,17 +55,27 @@ func TestStreamEvent(t *testing.T) {
 			if err := rootCmd.Execute(); err != nil {
 				t.Fatalf("Execute() failed: %v", err)
 			}
-			for i, event := range strings.Split(buf.String(), "\n") {
-				if strings.Split(test.ExpectedOutput, "\n")[i] != event {
-					t.Errorf("Expected %q\ngot %q", strings.Split(test.ExpectedOutput, "\n")[i], event)
+
+			// Get the expected output
+			if expectedEvents, ok := test.ExpectedOutput.([]*pb.StreamEventsResponse); ok {
+				// Split the actual output by newlines
+				actualEvents := strings.Split(strings.TrimSpace(buf.String()), "\n")
+
+				// Check if the number of events match
+				if len(actualEvents) != len(expectedEvents) {
+					t.Errorf("Expected %d events, got %d", len(expectedEvents), len(actualEvents))
+					return
 				}
+
+				// Compare each event
+				for i, expected := range expectedEvents {
+					if actualEvents[i] != expected.Event.String() {
+						t.Errorf("Expected event %d: %q\nGot: %q", i, expected.Event.String(), actualEvents[i])
+					}
+				}
+			} else {
+				t.Errorf("Type assertion failed, expected output is not []*pb.StreamEventsResponse")
 			}
-			/*
-				// Check if output matches expected output
-				if buf.String() != test.ExpectedOutput {
-					t.Errorf("Expected %q, \ngot %q", test.ExpectedOutput, buf.String())
-				}
-			*/
 		})
 	}
 }
