@@ -24,9 +24,14 @@ var StreamEventTests = []models.TestCase{
 		ExpectedOutput: mock.CreateEventsFromPolicies([]string{LoadedPolicies[0]}),
 	},
 	{
-		Name:           "Multiple policies",
+		Name:           "Two policies",
 		Args:           []string{"streamEvents", LoadedPolicies[0], LoadedPolicies[1]},
 		ExpectedOutput: mock.CreateEventsFromPolicies(LoadedPolicies[0:2]),
+	},
+	{
+		Name:           "Three policies",
+		Args:           []string{"streamEvents", LoadedPolicies[0], LoadedPolicies[1], LoadedPolicies[2]},
+		ExpectedOutput: mock.CreateEventsFromPolicies(LoadedPolicies),
 	},
 }
 
