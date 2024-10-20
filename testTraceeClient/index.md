@@ -42,6 +42,19 @@ run stream events:
 ./dist/TraceeClient streamEvents
 ```
 
+you can also format the output of tracee client by adding the flag `output`.
+`output` support 3 types of outputs:
+
+1. table (default)
+2. json
+3. go template
+
+you can run it like this:
+
+```bash
+./dist/TraceeClient streamEvents --output json
+```
+
 stream events from policy1:
 
 ```bash
