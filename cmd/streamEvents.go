@@ -7,7 +7,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var outputFormat string
+var formatFlag string
+var outputFlag string
 
 var (
 	streamEventsCmd = &cobra.Command{
@@ -21,8 +22,9 @@ var (
 )
 
 func init() {
-	streamEventsCmd.Flags().StringVarP(&outputFormat, "format", "f", "table", "Output format (json|table|template[default]) currently only support table")
-	streamEventsCmd.Flags().StringVarP(&outputFormat, "output", "o", "stdout", "Output destination ")
+	streamEventsCmd.Flags().StringVarP(&formatFlag, "format", "f", "table", "Output format (json|table|template[default]) currently only support table")
+	// only support stdout for now
+	streamEventsCmd.Flags().StringVarP(&outputFlag, "output", "o", "stdout", "Output destination ")
 }
 func streamEvents(cmd *cobra.Command, args []string) {
 	// Create service client
@@ -41,9 +43,24 @@ func streamEvents(cmd *cobra.Command, args []string) {
 
 	//add check for the output flag
 	//TODO:support only table format for now
-	// Print table header before streaming starts
-	tbl := formatter.InitTable()
+	switch formatFlag {
+	case "table":
+		tableStreamEvents(cmd, args, stream)
+	case "json":
+		jsonStreamEvents(cmd, args, stream)
+	case "template": // go template
+		fallthrough
+	default:
+		cmd.PrintErrln("Error: output format not supported")
+		return
+	}
 
+}
+
+// tableStreamEvents prints events in a table format
+func tableStreamEvents(cmd *cobra.Command, _ []string, stream pb.TraceeService_StreamEventsClient) {
+	// Init table header before streaming starts
+	tbl := formatter.InitTable(outputFlag)
 	// Receive and process streamed responses
 	for {
 		res, err := stream.Recv()
@@ -57,6 +74,22 @@ func streamEvents(cmd *cobra.Command, args []string) {
 
 		// Print each event as a row in the table
 		formatter.PrintTableRow(tbl, res.Event)
+	}
+}
 
+// jsonStreamEvents prints events in json format
+func jsonStreamEvents(cmd *cobra.Command, _ []string, stream pb.TraceeService_StreamEventsClient) {
+	// Receive and process streamed responses
+	for {
+		res, err := stream.Recv()
+		if err != nil {
+			// Handle the error that occurs when the server closes the stream
+			if err.Error() == "EOF" {
+				break
+			}
+			cmd.PrintErrln("Error receiving streamed event: ", err)
+		}
+		// Print each event as a row in json format
+		formatter.PrintJSON(cmd, res.Event, outputFlag)
 	}
 }

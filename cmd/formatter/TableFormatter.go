@@ -12,7 +12,8 @@ import (
 )
 
 // init new table
-func InitTable() *table.Table { //cmd *cobra.Command) {
+func InitTable(_ string) *table.Table {
+	// TODO: support other output formats
 	tbl := table.New(os.Stdout)
 	tbl.SetLineStyle(table.StyleBold)
 	initTableHeaders(tbl)
@@ -30,14 +31,13 @@ func initTableHeaders(tbl *table.Table) {
 
 	tbl.SetAutoMergeHeaders(true)
 }
-
 func PrintTableRow(tbl *table.Table, event *pb.Event) {
 	clearTerminal()
 	tbl.AddRow(
-		event.GetTimestamp().AsTime().Format("15:04:05.000"), //time
-		event.Name, //command
-		strings.Join(event.Policies.Matched, ", "), //policy
-		event.Context.String(),                     //context
+		event.GetTimestamp().AsTime().Format("15:04:05.000"), // time
+		event.Name, // command
+		strings.Join(event.Policies.Matched, ", "), // policy
+		event.Context.String(),                     // context
 		getEventData(event.Data),
 	)
 	tbl.Render()
@@ -52,9 +52,12 @@ func clearTerminal() {
 func getEventData(data []*pb.EventValue) string {
 	var result []string
 	for _, ev := range data {
-		result = append(result, getEventValue(ev))
+		result = append(result, getEventName(ev)+getEventValue(ev))
 	}
 	return strings.Join(result, ", ")
+}
+func getEventName(ev *pb.EventValue) string {
+	return strings.ToUpper(ev.Name[0:1]) + ev.Name[1:] + ": "
 }
 
 // generate event value

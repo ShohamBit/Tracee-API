@@ -1,23 +1,23 @@
 # Variables
 NAME := TraceeClient
 BUILD_DIR := ./dist
-SRC := ./...
+SRC :=  $(shell find . -name '*.go') # Finds all Go source files
+BINARY := $(BUILD_DIR)/$(NAME)
 
 # Default target: create build dir, build, and install
 .PHONY: all
-all: $(BUILD_DIR) build install
+all: $(BUILD_DIR) $(BINARY) install
 
-# Build target
-.PHONY: build
-build: ## Build the Go binary
+# Build binary only if source files have changed
+$(BINARY): $(SRC) | $(BUILD_DIR)
 	@echo "Building $(NAME)..."
-	go build -o $(BUILD_DIR) $(SRC)
+	go build  ./...
 
 # Install target
 .PHONY: install
-install: ## Build and install the binary
+install: $(BINARY) ## Build and install the binary
 	@echo "Installing $(NAME)..."
-	go install $(SRC)
+	go install ./...
 
 # Directory creation
 $(BUILD_DIR):
@@ -43,7 +43,7 @@ help: ## Show this help message
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} \
     /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
-#test target
+# Test target
 .PHONY: test
-test: #test tracee client
+test: ## Test TraceeClient
 	go test ./... -v
