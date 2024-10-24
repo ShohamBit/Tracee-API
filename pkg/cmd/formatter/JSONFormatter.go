@@ -8,6 +8,5 @@ import (
 // PrintJSON prints an event in JSON format
 func PrintJSON(cmd *cobra.Command, event *pb.Event, _ string) {
 	//TODO: add more output formats
-
-	cmd.Println(event.String())
+	cmd.Printf("%s\n", event.String())
 }

@@ -3,8 +3,6 @@ package cmd
 import (
 	"context"
 
-	"github.com/ShohamBit/TraceeClient/client"
-
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
 	"github.com/spf13/cobra"
 )
@@ -22,13 +20,12 @@ var metricsCmd = &cobra.Command{
 func displayMetrics(cmd *cobra.Command, _ []string) {
 
 	//create service client
-	client, err := client.NewDiagnosticClient(serverInfo)
-	if err != nil {
+	if err := TCD.NewDiagnosticClient(serverInfo); err == nil {
 		cmd.PrintErrln("Error creating client: ", err)
 	}
-	defer client.CloseConnection()
+	defer TCD.CloseConnection()
 	//get metrics
-	response, err := client.GetMetrics(context.Background(), &pb.GetMetricsRequest{})
+	response, err := TCD.GetMetrics(context.Background(), &pb.GetMetricsRequest{})
 	if err != nil {
 		cmd.PrintErrln("Error getting version: ", err)
 	}

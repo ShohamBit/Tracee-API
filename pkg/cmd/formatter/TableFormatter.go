@@ -2,51 +2,50 @@ package formatter
 
 import (
 	"fmt"
-	"os"
-	"os/exec"
 	"strings"
 
-	table "github.com/aquasecurity/table"
-
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
+	"github.com/spf13/cobra"
 )
 
-// init new table
-func InitTable(_ string) *table.Table {
-	// TODO: support other output formats
-	tbl := table.New(os.Stdout)
-	tbl.SetLineStyle(table.StyleBold)
-	initTableHeaders(tbl)
-	return tbl
+type Formatter struct {
+	format string
+	output string
+	cmd    *cobra.Command
 }
 
-// Define table titles once, for example during table initialization
-func initTableHeaders(tbl *table.Table) {
-	tbl.SetHeaders(
-		"Time",
-		"Command",
-		"Policy",
-		"Context",
-		"Data")
-
-	tbl.SetAutoMergeHeaders(true)
+func New(format string, output string, cmd *cobra.Command) *Formatter {
+	return &Formatter{
+		format: format,
+		output: output,
+		cmd:    cmd,
+	}
 }
-func PrintTableRow(tbl *table.Table, event *pb.Event) {
-	clearTerminal()
-	tbl.AddRow(
-		event.GetTimestamp().AsTime().Format("15:04:05.000"), // time
-		event.Name, // command
-		strings.Join(event.Policies.Matched, ", "), // policy
-		event.Context.String(),                     // context
+func (f *Formatter) PrintTableHeaders() {
+	f.cmd.Printf("%-15s %-20s %-16s %-25s %s\n",
+		"TIME",
+		"NAME",
+		"POLICIES",
+		"CONTEXT",
+		"DATA",
+	)
+}
+func (f *Formatter) PrintTableRow(event *pb.Event) {
+	timestamp := event.Timestamp.AsTime().Format("15:04:05.000")
+
+	f.cmd.Printf("%-15s %-20s %-15s %-25s %s\n",
+		timestamp,
+		event.Name,
+		event.Policies.Matched,
+		event.Context,
 		getEventData(event.Data),
 	)
-	tbl.Render()
+
 }
-func clearTerminal() {
-	cmd := exec.Command("clear")
-	cmd.Stdout = os.Stdout // Set output to standard output
-	cmd.Run()
-}
+
+// func getEventContext(context *pb.Context) string {
+// 	return " "
+// }
 
 // generate event data
 func getEventData(data []*pb.EventValue) string {

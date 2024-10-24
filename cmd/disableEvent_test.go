@@ -1,12 +1,13 @@
-package cmd
+package cmd_test
 
 import (
 	"bytes"
 	"testing"
 	"time"
 
-	"github.com/ShohamBit/TraceeClient/mock"
-	"github.com/ShohamBit/TraceeClient/models"
+	"github.com/ShohamBit/TraceeClient/cmd"
+	"github.com/ShohamBit/TraceeClient/pkg/mock"
+	"github.com/ShohamBit/TraceeClient/pkg/models"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -45,6 +46,7 @@ func TestDisableEvent(t *testing.T) {
 		t.Run(test.Name, func(t *testing.T) {
 			// Capture output
 			var buf bytes.Buffer
+			rootCmd := cmd.GetRootCmd()
 			rootCmd.SetOut(&buf)
 			rootCmd.SetErr(&buf)
 

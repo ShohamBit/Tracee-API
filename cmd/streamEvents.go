@@ -1,66 +1,66 @@
 package cmd
 
 import (
-	"github.com/ShohamBit/TraceeClient/client"
-	"github.com/ShohamBit/TraceeClient/cmd/formatter"
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
+
+	"github.com/ShohamBit/TraceeClient/pkg/cmd/formatter"
 	"github.com/spf13/cobra"
 )
 
 var formatFlag string
 var outputFlag string
-
-var (
-	streamEventsCmd = &cobra.Command{
-		Use:   "streamEvents [policy1] [policy2]...",
-		Short: "Stream events from tracee",
-		Long:  "Stream the events that tracee trace",
-		Run: func(cmd *cobra.Command, args []string) {
-			streamEvents(cmd, args)
-		},
-	}
-)
+var streamEventsCmd = &cobra.Command{
+	Use:   "streamEvents [policies...]",
+	Short: "Stream events from tracee",
+	Long:  "long about the use",
+	Run: func(cmd *cobra.Command, args []string) {
+		streamEvents(cmd, args)
+	},
+}
 
 func init() {
-	streamEventsCmd.Flags().StringVarP(&formatFlag, "format", "f", "table", "Output format (json|table|template[default]) currently only support table")
+
+	//stream events flags
+	streamEventsCmd.Flags().StringVarP(&formatFlag, "format", "f", "json", "Output format (json[default]|table|template) currently only support table")
 	// only support stdout for now
 	streamEventsCmd.Flags().StringVarP(&outputFlag, "output", "o", "stdout", "Output destination ")
 }
+
 func streamEvents(cmd *cobra.Command, args []string) {
 	// Create service client
-	client, err := client.NewServiceClient(serverInfo)
+	err := TCS.NewServiceClient(serverInfo)
 	if err != nil {
 		cmd.PrintErrln("Error creating client: ", err)
 	}
-	defer client.CloseConnection()
+	defer TCS.CloseConnection()
 
 	// create stream from client
 	req := &pb.StreamEventsRequest{Policies: args}
-	stream, err := client.StreamEvents(cmd.Context(), req)
+	stream, err := TCS.StreamEvents(cmd.Context(), req)
 	if err != nil {
 		cmd.PrintErrln("Error calling StreamEvents: ", err)
 	}
 
 	//add check for the output flag
-	//TODO:support only table format for now
+	//TODO:support only table and json format for now
 	switch formatFlag {
-	case "table":
-		tableStreamEvents(cmd, args, stream)
 	case "json":
 		jsonStreamEvents(cmd, args, stream)
+	case "table":
+		tableStreamEvents(cmd, args, stream)
 	case "template": // go template
 		fallthrough
 	default:
 		cmd.PrintErrln("Error: output format not supported")
 		return
 	}
-
 }
 
 // tableStreamEvents prints events in a table format
 func tableStreamEvents(cmd *cobra.Command, _ []string, stream pb.TraceeService_StreamEventsClient) {
 	// Init table header before streaming starts
-	tbl := formatter.InitTable(outputFlag)
+	tbl := formatter.New(formatFlag, outputFlag, cmd)
+	tbl.PrintTableHeaders()
 	// Receive and process streamed responses
 	for {
 		res, err := stream.Recv()
@@ -71,9 +71,8 @@ func tableStreamEvents(cmd *cobra.Command, _ []string, stream pb.TraceeService_S
 			}
 			cmd.PrintErrln("Error receiving streamed event: ", err)
 		}
+		tbl.PrintTableRow(res.Event)
 
-		// Print each event as a row in the table
-		formatter.PrintTableRow(tbl, res.Event)
 	}
 }
 

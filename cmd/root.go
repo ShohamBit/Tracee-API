@@ -1,15 +1,22 @@
 package cmd
 
 import (
-	"github.com/ShohamBit/TraceeClient/models"
-
 	"os"
+
+	"github.com/ShohamBit/TraceeClient/pkg/client"
 
 	"github.com/spf13/cobra"
 )
 
 var (
-	serverInfo models.ServerInfo
+	DefaultIP   = "localhost"
+	DefaultPort = "4466"
+	TCS         client.ServiceClient    // tracee service client
+	TCD         client.DiagnosticClient // tracee diagnostic  client
+	serverInfo  client.ServerInfo       = client.ServerInfo{
+		IP:   DefaultIP,
+		Port: DefaultPort,
+	}
 
 	rootCmd = &cobra.Command{
 		Use:   "TraceeClient",
@@ -31,8 +38,8 @@ func init() {
 	rootCmd.AddCommand(streamEventsCmd)
 
 	//flags
-	rootCmd.PersistentFlags().StringVarP(&serverInfo.IP, "ip", "i", models.DefaultIP, "IP to connect to the remote server")
-	rootCmd.PersistentFlags().StringVarP(&serverInfo.Port, "port", "p", models.DefaultPort, "Port to connect to the remote server")
+	rootCmd.PersistentFlags().StringVarP(&serverInfo.IP, "ip", "i", DefaultIP, "IP to connect to the remote server")
+	rootCmd.PersistentFlags().StringVarP(&serverInfo.Port, "port", "p", DefaultPort, "Port to connect to the remote server")
 
 }
 
@@ -44,10 +51,6 @@ func Execute() {
 }
 
 // expose root command
-func NewRootCommand() *cobra.Command {
+func GetRootCmd() *cobra.Command {
 	return rootCmd
-}
-
-func GetServerInfo() models.ServerInfo {
-	return serverInfo
 }
