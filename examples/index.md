@@ -13,7 +13,7 @@ Tracee \
 ## run client
 
 ``` bash
-sudo ./dist/TraceeClient 
+sudo ./dist/traceectl 
 ```
 
 you have cupule of options:
@@ -24,22 +24,22 @@ you have cupule of options:
     5. metrics
 
 ``` bash
-sudo ./dist/TraceeClient version
-sudo ./dist/TraceeClient streamEvents [policies]
-sudo ./dist/TraceeClient enableEvents [events]
-sudo ./dist/TraceeClient disableEvents [events]
-sudo ./dist/TraceeClient metrics
-sudo ./dist/TraceeClient 
+sudo ./dist/traceectl version
+sudo ./dist/traceectl streamEvents [policies]
+sudo ./dist/traceectl enableEvents [events]
+sudo ./dist/traceectl disableEvents [events]
+sudo ./dist/traceectl metrics
+sudo ./dist/traceectl 
 ```
 
 ## test stream events
 
-the client has a policy directory under `TraceeClient/policies`
+the client has a policy directory under `traceectl/policies`
 
 run stream events:
 
 ```bash
-./dist/TraceeClient streamEvents
+./dist/traceectl streamEvents
 ```
 
 you can also format the output of tracee client by adding the flag `output`.
@@ -52,20 +52,20 @@ you can also format the output of tracee client by adding the flag `output`.
 you can run it like this:
 
 ```bash
-./dist/TraceeClient streamEvents --output json
+./dist/traceectl streamEvents --output json
 ```
 
 stream events from policy1:
 
 ```bash
-./dist/TraceeClient streamEvents policy1
-./dist/TraceeClient streamEvents policy2
+./dist/traceectl streamEvents policy1
+./dist/traceectl streamEvents policy2
 ```
 
 stream event from 2 policies
 
 ``` bash
-./dist/TraceeClient streamEvents policy1 policy2
+./dist/traceectl streamEvents policy1 policy2
 ```
 
 you can run this commend to check for events,

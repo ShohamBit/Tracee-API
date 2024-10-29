@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ShohamBit/TraceeClient/cmd"
-	"github.com/ShohamBit/TraceeClient/pkg/mock"
-	"github.com/ShohamBit/TraceeClient/pkg/models"
+	"github.com/ShohamBit/traceectl/cmd"
+	"github.com/ShohamBit/traceectl/pkg/mock"
+	"github.com/ShohamBit/traceectl/pkg/models"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -3,7 +3,7 @@ package cmd
 import (
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
 
-	"github.com/ShohamBit/TraceeClient/pkg/cmd/formatter"
+	"github.com/ShohamBit/traceectl/pkg/cmd/formatter"
 	"github.com/spf13/cobra"
 )
 

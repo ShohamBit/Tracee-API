@@ -35,7 +35,7 @@ make
 After you compile Tracee client you can run it
 
 ```bash
-TraceeClient 
+traceectl 
 ```
 
 It will print the help commend for you to view how you can interact with the client.

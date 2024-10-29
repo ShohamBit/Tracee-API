@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-// github.com/ShohamBit/TraceeClient holds the gRPC connection and service client.
+// github.com/ShohamBit/traceectl holds the gRPC connection and service client.
 const (
 	// unix socket
 	PROTOCOL_UNIX = "unix"
