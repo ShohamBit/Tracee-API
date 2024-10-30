@@ -42,21 +42,12 @@ func init() {
 	rootCmd.RegisterFlagCompletionFunc("connectionType", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{client.PROTOCOL_TCP, client.PROTOCOL_UNIX}, cobra.ShellCompDirectiveNoFileComp
 	})
+	//TODO: add an option to ony use this flag par connection type
+	//unix connection type flag
 	rootCmd.PersistentFlags().StringVar(&serverInfo.UnixSocketPath, "socketPath", client.SOCKET, "Path of the unix socket")
+	//tcp connection type flag
 	rootCmd.PersistentFlags().StringVarP(&serverInfo.IP, "ip", "i", client.DefaultIP, "IP to connect to the remote server")
 	rootCmd.PersistentFlags().StringVarP(&serverInfo.Port, "port", "p", client.DefaultPort, "Port to connect to the remote server")
-
-	// Adjust flags based on connection type
-
-	rootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
-		if serverInfo.ConnectionType == client.PROTOCOL_TCP {
-			cmd.PersistentFlags().Lookup("ip").Hidden = false
-			cmd.PersistentFlags().Lookup("port").Hidden = false
-		} else {
-			cmd.PersistentFlags().Lookup("ip").Hidden = true
-			cmd.PersistentFlags().Lookup("port").Hidden = true
-		}
-	}
 
 }
 
