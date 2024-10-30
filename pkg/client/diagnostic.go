@@ -8,13 +8,13 @@ import (
 	"google.golang.org/grpc"
 )
 
-// github.com/ShohamBit/TraceeClient holds the gRPC connection and diagnostic client.
+// github.com/ShohamBit/traceectl holds the gRPC connection and diagnostic client.
 type DiagnosticClient struct {
 	conn   *grpc.ClientConn
 	client pb.DiagnosticServiceClient
 }
 
-// Newgithub.com/ShohamBit/TraceeClient initializes a new gRPC client connection.
+// Newgithub.com/ShohamBit/traceectl initializes a new gRPC client connection.
 func (tc *DiagnosticClient) NewDiagnosticClient(serverInfo ServerInfo) error {
 	// Connect to the server and handle errors properly
 	conn, err := connectToServer(serverInfo)

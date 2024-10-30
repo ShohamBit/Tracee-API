@@ -8,15 +8,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ShohamBit/TraceeClient/cmd"
-	"github.com/ShohamBit/TraceeClient/pkg/client"
+	"github.com/ShohamBit/traceectl/pkg/client"
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
 	"google.golang.org/grpc"
 )
 
 var (
 	ExpectedVersion string            = "v0.22.0-15-gd09d7fca0d" // Match the output format
-	serverInfo      client.ServerInfo = client.ServerInfo{IP: cmd.DefaultIP, Port: cmd.DefaultPort}
+	serverInfo      client.ServerInfo = client.ServerInfo{IP: client.DefaultIP, Port: client.DefaultPort}
 )
 
 // MockServiceServer implements the gRPC server interface for testing

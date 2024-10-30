@@ -13,7 +13,7 @@ type ServiceClient struct {
 	client pb.TraceeServiceClient
 }
 
-// New github.com/ShohamBit/TraceeClient initializes a new gRPC client connection.
+// New github.com/ShohamBit/traceectl initializes a new gRPC client connection.
 func (tc *ServiceClient) NewServiceClient(serverInfo ServerInfo) error {
 	// Connect to the server and handle errors properly
 	conn, err := connectToServer(serverInfo)

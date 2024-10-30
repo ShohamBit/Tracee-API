@@ -6,8 +6,8 @@ package cmd_test
 // 	"testing"
 // 	"time"
 
-// 	"github.com/ShohamBit/TraceeClient/mock"
-// 	"github.com/ShohamBit/TraceeClient/models"
+// 	"github.com/ShohamBit/traceectl/mock"
+// 	"github.com/ShohamBit/traceectl/models"
 // 	pb "github.com/aquasecurity/tracee/api/v1beta1"
 // )
 

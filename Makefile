@@ -1,5 +1,5 @@
 # Variables
-NAME := TraceeClient
+NAME := traceectl
 BUILD_DIR := ./dist
 SRC := ./...
 

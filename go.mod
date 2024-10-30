@@ -1,4 +1,4 @@
-module github.com/ShohamBit/TraceeClient
+module github.com/ShohamBit/traceectl
 
 go 1.23.1
 
