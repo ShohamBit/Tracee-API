@@ -21,8 +21,7 @@ const (
 type ServerInfo struct {
 	ConnectionType string // Field to specify connection type (e.g., "unix" or "tcp")
 	UnixSocketPath string // Path for the Unix socket, if using Unix connection
-	IP             string
-	Port           string
+	ADDR           string // Address for the connection
 }
 
 // this function use grpc to connect the server
@@ -41,7 +40,7 @@ func connectToServer(serverInfo ServerInfo) (*grpc.ClientConn, error) {
 		conn, err = grpc.NewClient(fmt.Sprintf("unix://%s", serverInfo.UnixSocketPath), opts...)
 	case PROTOCOL_TCP:
 		// Dial a TCP address
-		address := fmt.Sprintf("%s:%s", serverInfo.IP, serverInfo.Port)
+		address := fmt.Sprintf(serverInfo.ADDR)
 		conn, err = grpc.NewClient(address, opts...)
 	default:
 		return nil, fmt.Errorf("unsupported connection type: %s", serverInfo.ConnectionType)

@@ -14,12 +14,11 @@ var (
 	serverInfo client.ServerInfo       = client.ServerInfo{
 		ConnectionType: client.PROTOCOL_UNIX,
 		UnixSocketPath: client.SOCKET,
-		IP:             client.DefaultIP,
-		Port:           client.DefaultPort,
+		ADDR:           client.DefaultIP + ":" + client.DefaultPort,
 	}
 
 	rootCmd = &cobra.Command{
-		Use:   "trceectl",
+		Use:   "trceectl [flags] [options]",
 		Short: "TraceeCtl is a CLI tool for tracee",
 		Long:  "TraceeCtl is the client for the tracee API server.",
 		Run: func(cmd *cobra.Command, args []string) {
@@ -33,9 +32,15 @@ func init() {
 	// commands
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(metricsCmd)
-	rootCmd.AddCommand(enableEventCmd)
-	rootCmd.AddCommand(disableEventCmd)
-	rootCmd.AddCommand(streamEventsCmd)
+	rootCmd.AddCommand(streamCmd)
+	rootCmd.AddCommand(eventCmd)
+	rootCmd.AddCommand(connectCmd)
+	rootCmd.AddCommand(diagnoseCmd)
+	rootCmd.AddCommand(logsCmd)
+	rootCmd.AddCommand(pluginCmd)
+	rootCmd.AddCommand(policyCmd)
+	rootCmd.AddCommand(statusCmd)
+	rootCmd.AddCommand(configCmd)
 
 	//flags
 	rootCmd.PersistentFlags().StringVarP(&serverInfo.ConnectionType, "connectionType", "c", client.PROTOCOL_UNIX, "Connection type (unix|tcp)")
@@ -46,8 +51,7 @@ func init() {
 	//unix connection type flag
 	rootCmd.PersistentFlags().StringVar(&serverInfo.UnixSocketPath, "socketPath", client.SOCKET, "Path of the unix socket")
 	//tcp connection type flag
-	rootCmd.PersistentFlags().StringVarP(&serverInfo.IP, "ip", "i", client.DefaultIP, "IP to connect to the remote server")
-	rootCmd.PersistentFlags().StringVarP(&serverInfo.Port, "port", "p", client.DefaultPort, "Port to connect to the remote server")
+	rootCmd.PersistentFlags().StringVarP(&serverInfo.ADDR, "server", "s", client.DefaultIP+":"+client.DefaultPort, "he address and port of the Kubernetes API server")
 
 }
 
