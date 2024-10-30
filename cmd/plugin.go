@@ -1,6 +1,5 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
@@ -13,28 +12,48 @@ import (
 // pluginCmd represents the plugin command
 var pluginCmd = &cobra.Command{
 	Use:   "plugin",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "plugin management for traceectl",
+	Long: `Plugin Management:
+  	- traceectl plugin install --name <plugin_name> --repo <repository_url>
+  	- traceectl plugin list
+  	- traceectl plugin uninstall <plugin_name>
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("plugin called")
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(pluginCmd)
+	pluginCmd.AddCommand(pluginInstallCmd)
+	pluginCmd.AddCommand(pluginListCmd)
+	pluginCmd.AddCommand(pluginUninstallCmd)
+}
 
-	// Here you will define your flags and configuration settings.
+var pluginInstallCmd = &cobra.Command{
+	Use:   "install",
+	Short: "install a plugin from a remote repository",
+	Long: `Install a plugin from a remote repository:	
+  	- traceectl plugin install --name <plugin_name> --repo <repository_url>
+`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("install called")
+	},
+}
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// pluginCmd.PersistentFlags().String("foo", "", "A help for foo")
+var pluginListCmd = &cobra.Command{
+	Use:   "list",
+	Short: "list installed plugins",
+	Long:  `List all installed plugins.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("list called")
+	},
+}
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// pluginCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+var pluginUninstallCmd = &cobra.Command{
+	Use:   "uninstall <plugin_name>",
+	Short: "uninstall a plugin",
+	Long:  `Uninstalls a plugin by its name.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("uninstall called")
+	},
 }

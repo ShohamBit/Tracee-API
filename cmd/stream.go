@@ -24,12 +24,22 @@ var streamCmd = &cobra.Command{
   	- traceectl stream resume <stream_name>
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		stream(cmd, args)
+
+		//stream(cmd, args)
 	},
 }
 
 func init() {
-
+	//subcommands
+	streamCmd.AddCommand(createStreamCmd)
+	streamCmd.AddCommand(describeStreamCmd)
+	streamCmd.AddCommand(listStreamCmd)
+	streamCmd.AddCommand(updateStreamCmd)
+	streamCmd.AddCommand(deleteStreamCmd)
+	streamCmd.AddCommand(connectStreamCmd)
+	streamCmd.AddCommand(setDefaultStreamCmd)
+	streamCmd.AddCommand(pauseStreamCmd)
+	streamCmd.AddCommand(resumeStreamCmd)
 	//stream events flags
 	streamCmd.Flags().StringVarP(&formatFlag, "format", "f", "json", "Output format (json[default]|table|template) currently only support table")
 	// only support stdout for now
