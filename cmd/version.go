@@ -3,8 +3,6 @@ package cmd
 import (
 	"context"
 
-	"github.com/ShohamBit/TraceeClient/client"
-
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
 	"github.com/spf13/cobra"
 )
@@ -21,13 +19,12 @@ var versionCmd = &cobra.Command{
 func displayVersion(cmd *cobra.Command, _ []string) {
 
 	//create service client
-	client, err := client.NewServiceClient(serverInfo)
-	if err != nil {
+	if err := TCS.NewServiceClient(serverInfo); err != nil {
 		cmd.PrintErrln("Error creating client: ", err)
 	}
-	defer client.CloseConnection()
+	defer TCS.CloseConnection()
 	//get version
-	response, err := client.GetVersion(context.Background(), &pb.GetVersionRequest{})
+	response, err := TCS.GetVersion(context.Background(), &pb.GetVersionRequest{})
 	if err != nil {
 		cmd.PrintErrln("Error getting version: ", err)
 	}

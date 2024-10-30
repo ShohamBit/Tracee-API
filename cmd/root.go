@@ -1,20 +1,27 @@
 package cmd
 
 import (
-	"github.com/ShohamBit/TraceeClient/models"
-
 	"os"
+
+	"github.com/ShohamBit/traceectl/pkg/client"
 
 	"github.com/spf13/cobra"
 )
 
 var (
-	serverInfo models.ServerInfo
+	TCS        client.ServiceClient    // tracee service client
+	TCD        client.DiagnosticClient // tracee diagnostic  client
+	serverInfo client.ServerInfo       = client.ServerInfo{
+		ConnectionType: client.PROTOCOL_UNIX,
+		UnixSocketPath: client.SOCKET,
+		IP:             client.DefaultIP,
+		Port:           client.DefaultPort,
+	}
 
 	rootCmd = &cobra.Command{
-		Use:   "TraceeClient",
-		Short: "TraceeClient is a CLI tool for tracee",
-		Long:  "Tracee client is the client for tracee api server.",
+		Use:   "trceectl",
+		Short: "TraceeCtl is a CLI tool for tracee",
+		Long:  "TraceeCtl is the client for the tracee API server.",
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.Help()
 		},
@@ -31,8 +38,16 @@ func init() {
 	rootCmd.AddCommand(streamEventsCmd)
 
 	//flags
-	rootCmd.PersistentFlags().StringVarP(&serverInfo.IP, "ip", "i", models.DefaultIP, "IP to connect to the remote server")
-	rootCmd.PersistentFlags().StringVarP(&serverInfo.Port, "port", "p", models.DefaultPort, "Port to connect to the remote server")
+	rootCmd.PersistentFlags().StringVarP(&serverInfo.ConnectionType, "connectionType", "c", client.PROTOCOL_UNIX, "Connection type (unix|tcp)")
+	rootCmd.RegisterFlagCompletionFunc("connectionType", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{client.PROTOCOL_TCP, client.PROTOCOL_UNIX}, cobra.ShellCompDirectiveNoFileComp
+	})
+	//TODO: add an option to ony use this flag par connection type
+	//unix connection type flag
+	rootCmd.PersistentFlags().StringVar(&serverInfo.UnixSocketPath, "socketPath", client.SOCKET, "Path of the unix socket")
+	//tcp connection type flag
+	rootCmd.PersistentFlags().StringVarP(&serverInfo.IP, "ip", "i", client.DefaultIP, "IP to connect to the remote server")
+	rootCmd.PersistentFlags().StringVarP(&serverInfo.Port, "port", "p", client.DefaultPort, "Port to connect to the remote server")
 
 }
 
@@ -44,10 +59,6 @@ func Execute() {
 }
 
 // expose root command
-func NewRootCommand() *cobra.Command {
+func GetRootCmd() *cobra.Command {
 	return rootCmd
-}
-
-func GetServerInfo() models.ServerInfo {
-	return serverInfo
 }

@@ -3,8 +3,6 @@ package cmd
 import (
 	"context"
 
-	"github.com/ShohamBit/TraceeClient/client"
-
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
 	"github.com/spf13/cobra"
 )
@@ -26,15 +24,14 @@ var disableEventCmd = &cobra.Command{
 
 func disableEvents(cmd *cobra.Command, eventNames []string) {
 	// Create Tracee gRPC client
-	client, err := client.NewServiceClient(serverInfo)
-	if err != nil {
+	if err := TCS.NewServiceClient(serverInfo); err != nil {
 		cmd.PrintErrln("Error creating client: ", err)
 		return // Exit on error
 	}
 
 	// Iterate over event names and disable each one
 	for _, eventName := range eventNames {
-		_, err := client.DisableEvent(context.Background(), &pb.DisableEventRequest{Name: eventName})
+		_, err := TCS.DisableEvent(context.Background(), &pb.DisableEventRequest{Name: eventName})
 		if err != nil {
 			cmd.PrintErrln("Error disabling event:", err)
 			continue // Continue on error with the next event

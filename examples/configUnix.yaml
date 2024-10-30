@@ -1,0 +1,1 @@
+grpc-listen-addr: unix:/tmp/tracee.sock

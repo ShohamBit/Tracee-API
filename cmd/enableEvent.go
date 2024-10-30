@@ -3,8 +3,6 @@ package cmd
 import (
 	"context"
 
-	"github.com/ShohamBit/TraceeClient/client"
-
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
 	"github.com/spf13/cobra"
 )
@@ -26,15 +24,14 @@ var enableEventCmd = &cobra.Command{
 
 func enableEvents(cmd *cobra.Command, eventNames []string) {
 	// Create Tracee gRPC client
-	client, err := client.NewServiceClient(serverInfo)
-	if err != nil {
+	if err := TCS.NewServiceClient(serverInfo); err != nil {
 		cmd.PrintErrln("Error creating client: ", err)
 		return // Exit on error
 	}
 
 	// Iterate over event names and enable each one
 	for _, eventName := range eventNames {
-		_, err := client.EnableEvent(context.Background(), &pb.EnableEventRequest{Name: eventName})
+		_, err := TCS.EnableEvent(context.Background(), &pb.EnableEventRequest{Name: eventName})
 		if err != nil {
 			cmd.PrintErrln("Error enabling event:", err)
 			continue // Continue on error with the next event
