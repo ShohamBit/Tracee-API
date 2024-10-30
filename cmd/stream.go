@@ -24,7 +24,6 @@ var streamCmd = &cobra.Command{
   	- traceectl stream resume <stream_name>
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-
 		stream(cmd, args)
 	},
 }
