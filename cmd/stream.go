@@ -25,7 +25,7 @@ var streamCmd = &cobra.Command{
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		//stream(cmd, args)
+		stream(cmd, args)
 	},
 }
 
