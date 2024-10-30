@@ -22,22 +22,22 @@ func New(format string, output string, cmd *cobra.Command) *Formatter {
 	}
 }
 func (f *Formatter) PrintTableHeaders() {
-	f.cmd.Printf("%-15s %-20s %-16s %-25s %s\n",
+	f.cmd.Printf("%-15s %-25s %-15s %-15s %s\n",
 		"TIME",
-		"NAME",
+		"EVENT NAME",
 		"POLICIES",
-		"CONTEXT",
+		"PID",
 		"DATA",
 	)
 }
 func (f *Formatter) PrintTableRow(event *pb.Event) {
 	timestamp := event.Timestamp.AsTime().Format("15:04:05.000")
 
-	f.cmd.Printf("%-15s %-20s %-15s %-25s %s\n",
+	f.cmd.Printf("%-15s %-25s %-15s %-15s %s\n",
 		timestamp,
 		event.Name,
-		event.Policies.Matched,
-		event.Context,
+		strings.Join(event.Policies.Matched, ","),
+		fmt.Sprintf("%d", event.Context.Process.Pid.Value),
 		getEventData(event.Data),
 	)
 
