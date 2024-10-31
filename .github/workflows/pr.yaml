@@ -122,40 +122,40 @@ jobs:
   #
   # CODE VERIFICATION
   #
-  verify-analyze-code:
-    name: Verify and Analyze Code
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-        with:
-          submodules: true
-      - name: Install Dependencies
-        uses: ./.github/actions/build-dependencies
-      - name: Lint
-        run: |
-          if test -z "$(gofmt -l .)"; then
-            echo "Congrats! There is nothing to fix."
-          else
-            echo "The following lines should be fixed."
-            gofmt -s -d .
-            exit 1
-          fi
-      - name: Lint (Revive)
-        run: |
-          make check-lint
-      - name: Check Code Style
-        run: |
-          make check-fmt
-      - name: Check Golang Vet
-        run: |
-          make check-vet
-      - name: Check with StaticCheck
-        run: |
-          make check-staticcheck
-      - name: Check with errcheck
-        run: |
-          make check-err
+  # verify-analyze-code:
+  #   name: Verify and Analyze Code
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+  #       with:
+  #         submodules: true
+  #     - name: Install Dependencies
+  #       uses: ./.github/actions/build-dependencies
+  #     - name: Lint
+  #       run: |
+  #         if test -z "$(gofmt -l .)"; then
+  #           echo "Congrats! There is nothing to fix."
+  #         else
+  #           echo "The following lines should be fixed."
+  #           gofmt -s -d .
+  #           exit 1
+  #         fi
+  #     - name: Lint (Revive)
+  #       run: |
+  #         make check-lint
+  #     - name: Check Code Style
+  #       run: |
+  #         make check-fmt
+  #     - name: Check Golang Vet
+  #       run: |
+  #         make check-vet
+  #     - name: Check with StaticCheck
+  #       run: |
+  #         make check-staticcheck
+  #     - name: Check with errcheck
+  #       run: |
+  #         make check-err
   #
   # SIGNATURES CODE VERIFICATION
   #

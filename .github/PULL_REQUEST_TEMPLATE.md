@@ -13,20 +13,18 @@ Checklist:
 PS: DO NOT JUMP THE CHECKLIST. GO BACK AND READ, ALWAYS!
 -->
 
-### 1. Explain what the PR does
+# 1. Explain what the PR does
 
 <!-- Best advice is to put copy & paste "make check-pr" PR Comment output -->
 
-"Replace me with `make check-pr` output"
-
-### 2. Explain how to test it
+# 2. Explain how to test it
 
 <!--
 Maintainer will review the code, and test the fix/feature, how to run Tracee ?
 Give a full command line example and what to look for.
 -->
 
-### 3. Other comments
+# 3. Other comments
 
 <!--
 Links? References? Anything pointing to more context about the change.
