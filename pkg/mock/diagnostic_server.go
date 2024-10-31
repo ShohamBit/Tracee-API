@@ -2,7 +2,6 @@ package mock
 
 import (
 	"context"
-	"fmt"
 	"net"
 
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
@@ -22,7 +21,7 @@ type MockDiagnosticServer struct {
 
 // Start a mock gRPC server
 func StartMockDiagnosticServer() (*grpc.Server, error) {
-	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%s", serverInfo.IP, serverInfo.Port))
+	lis, err := net.Listen("tcp", serverInfo.ADDR)
 	if err != nil {
 		return nil, err
 	}

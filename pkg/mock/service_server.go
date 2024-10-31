@@ -2,7 +2,6 @@ package mock
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"sort"
 	"strings"
@@ -15,7 +14,9 @@ import (
 
 var (
 	ExpectedVersion string            = "v0.22.0-15-gd09d7fca0d" // Match the output format
-	serverInfo      client.ServerInfo = client.ServerInfo{IP: client.DefaultIP, Port: client.DefaultPort}
+	serverInfo      client.ServerInfo = client.ServerInfo{
+		ADDR: client.DefaultIP + ":" + client.DefaultPort,
+	}
 )
 
 // MockServiceServer implements the gRPC server interface for testing
@@ -25,7 +26,7 @@ type MockServiceServer struct {
 
 // Start a mock gRPC server
 func StartMockServiceServer() (*grpc.Server, error) {
-	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%s", serverInfo.IP, serverInfo.Port))
+	lis, err := net.Listen("tcp", serverInfo.ADDR)
 	if err != nil {
 		return nil, err
 	}
