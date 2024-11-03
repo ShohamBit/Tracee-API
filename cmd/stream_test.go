@@ -11,6 +11,8 @@ import (
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
 )
 
+// test run the mock server and start the stream command
+// currently stream can connect to the server and print the output of events to the stream
 var streamTests = []models.TestCase{
 	{
 		Name:           "No stream subcommand",

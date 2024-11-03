@@ -13,6 +13,7 @@ var streamCmd = &cobra.Command{
 	Use:   "stream [policies...]",
 	Short: "Stream events from tracee",
 	Long: `Stream Management:
+	- traceectl stream [POLICIES...] -  stream event directly from tracee
   	- traceectl stream create --name <stream_name> [--destination <destination>] [--format <format>] [--fields <fields>] [--parse-data] [--filter <filter>]
   	- traceectl stream describe <stream_name>
   	- traceectl stream list
