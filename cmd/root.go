@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"github.com/ShohamBit/traceectl/pkg/client"
@@ -104,7 +103,6 @@ var configCmd = &cobra.Command{
 	Short: "View or modify the Tracee Daemon configuration at runtime.",
 	Long:  `View or modify the Tracee Daemon configuration at runtime.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("config called")
 	},
 }
 
@@ -133,8 +131,9 @@ func GetRootCmd() *cobra.Command {
 func displayMetrics(cmd *cobra.Command, _ []string) {
 
 	//create service client
-	if err := TCD.NewDiagnosticClient(serverInfo); err == nil {
+	if err := TCD.NewDiagnosticClient(serverInfo); err != nil {
 		cmd.PrintErrln("Error creating client: ", err)
+		return
 	}
 	defer TCD.CloseConnection()
 	//get metrics
