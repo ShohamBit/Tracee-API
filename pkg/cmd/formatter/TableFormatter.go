@@ -5,24 +5,10 @@ import (
 	"strings"
 
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
-	"github.com/spf13/cobra"
 )
 
-type Formatter struct {
-	format string
-	output string
-	cmd    *cobra.Command
-}
-
-func New(format string, output string, cmd *cobra.Command) *Formatter {
-	return &Formatter{
-		format: format,
-		output: output,
-		cmd:    cmd,
-	}
-}
 func (f *Formatter) PrintTableHeaders() {
-	f.cmd.Printf("%-15s %-25s %-15s %-15s %s\n",
+	f.CMD.Printf("%-15s %-25s %-15s %-15s %s\n",
 		"TIME",
 		"EVENT NAME",
 		"POLICIES",
@@ -33,7 +19,7 @@ func (f *Formatter) PrintTableHeaders() {
 func (f *Formatter) PrintTableRow(event *pb.Event) {
 	timestamp := event.Timestamp.AsTime().Format("15:04:05.000")
 
-	f.cmd.Printf("%-15s %-25s %-15s %-15s %s\n",
+	f.CMD.Printf("%-15s %-25s %-15s %-15s %s\n",
 		timestamp,
 		event.Name,
 		strings.Join(event.Policies.Matched, ","),
@@ -42,10 +28,6 @@ func (f *Formatter) PrintTableRow(event *pb.Event) {
 	)
 
 }
-
-// func getEventContext(context *pb.Context) string {
-// 	return " "
-// }
 
 // generate event data
 func getEventData(data []*pb.EventValue) string {
