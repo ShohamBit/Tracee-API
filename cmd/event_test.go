@@ -45,7 +45,7 @@ var eventTests = []models.TestCase{
 
 func TestEvent(t *testing.T) {
 	// Start the mock server
-	mockServer, err := mock.StartMockServiceServer()
+	mockServer, err := mock.StartMockServer()
 	if err != nil {
 		t.Fatalf("Failed to start mock server: %v", err)
 	}

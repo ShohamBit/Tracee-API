@@ -24,12 +24,16 @@ type MockServiceServer struct {
 	pb.UnimplementedTraceeServiceServer // Embed the unimplemented server
 }
 
+// MockDiagnosticServer implements the gRPC server interface for testing
+type MockDiagnosticServer struct {
+	pb.UnimplementedDiagnosticServiceServer // Embed the unimplemented server
+}
+
 // CreateMockServer initializes the gRPC server and binds it to a Unix socket listener
 func CreateMockServer() (*grpc.Server, net.Listener, error) {
-	//check for unix socket
+	// Check for existing Unix socket and remove it if necessary
 	if _, err := os.Stat(serverInfo.UnixSocketPath); err == nil {
-		err := os.Remove(serverInfo.UnixSocketPath)
-		if err != nil {
+		if err := os.Remove(serverInfo.UnixSocketPath); err != nil {
 			return nil, nil, fmt.Errorf("failed to cleanup gRPC listening address (%s): %v", serverInfo.UnixSocketPath, err)
 		}
 	}
@@ -43,15 +47,19 @@ func CreateMockServer() (*grpc.Server, net.Listener, error) {
 	// Create a new gRPC server
 	server := grpc.NewServer()
 
+	// Register both TraceeService and DiagnosticService with the server
+	pb.RegisterTraceeServiceServer(server, &MockServiceServer{})
+	pb.RegisterDiagnosticServiceServer(server, &MockDiagnosticServer{})
+
 	return server, listener, nil
 }
 
-func StartMockServiceServer() (*grpc.Server, error) {
+// StartMockServer starts the gRPC server with both services registered
+func StartMockServer() (*grpc.Server, error) {
 	mockServer, listener, err := CreateMockServer()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create mock server: %v", err)
 	}
-	pb.RegisterTraceeServiceServer(mockServer, &MockServiceServer{})
 
 	// Start serving in a goroutine
 	go func() {
@@ -59,5 +67,14 @@ func StartMockServiceServer() (*grpc.Server, error) {
 			fmt.Printf("gRPC server failed: %v\n", err)
 		}
 	}()
+
 	return mockServer, nil
+}
+
+// StopMockServer stops the server and removes the Unix socket
+func StopMockServer(server *grpc.Server) {
+	server.GracefulStop()
+	if err := os.Remove(serverInfo.UnixSocketPath); err != nil {
+		fmt.Printf("failed to remove Unix socket: %v\n", err)
+	}
 }

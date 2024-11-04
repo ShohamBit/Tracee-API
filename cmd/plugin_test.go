@@ -19,7 +19,7 @@ var pluginTests = []models.TestCase{
 
 func TestPluginCmd(t *testing.T) {
 	// Start the mock server
-	mockServer, err := mock.StartMockServiceServer()
+	mockServer, err := mock.StartMockServer()
 	if err != nil {
 		t.Fatalf("Failed to start mock server: %v", err)
 	}
