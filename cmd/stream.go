@@ -125,6 +125,8 @@ func stream(cmd *cobra.Command, args []string) {
 	err := TCS.NewServiceClient(serverInfo)
 	if err != nil {
 		cmd.PrintErrln("Error creating client: ", err)
+		TCS.CloseConnection()
+		return
 	}
 	defer TCS.CloseConnection()
 
@@ -133,12 +135,14 @@ func stream(cmd *cobra.Command, args []string) {
 	stream, err := TCS.StreamEvents(cmd.Context(), req)
 	if err != nil {
 		cmd.PrintErrln("Error calling Stream: ", err)
+		return
 	}
 
 	//create formatter for output
 	format, err := formatter.New(formatFlag, outputFlag, cmd)
 	if err != nil {
 		cmd.PrintErrln("Error creating formatter: ", err)
+		return
 	}
 	//show events
 	printer.StreamEvents(format, args, stream)

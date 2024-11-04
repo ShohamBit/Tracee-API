@@ -140,7 +140,8 @@ func displayMetrics(cmd *cobra.Command, _ []string) {
 	//get metrics
 	response, err := TCD.GetMetrics(context.Background(), &pb.GetMetricsRequest{})
 	if err != nil {
-		cmd.PrintErrln("Error getting version: ", err)
+		cmd.PrintErrln("Error getting metrics: ", err)
+		return
 	}
 
 	// Display the metrics
@@ -156,7 +157,6 @@ func displayMetrics(cmd *cobra.Command, _ []string) {
 }
 
 func displayVersion(cmd *cobra.Command, _ []string) {
-
 	//create service client
 	if err := TCS.NewServiceClient(serverInfo); err != nil {
 		cmd.PrintErrln("Error creating client: ", err)
@@ -164,9 +164,12 @@ func displayVersion(cmd *cobra.Command, _ []string) {
 	defer TCS.CloseConnection()
 	//get version
 	response, err := TCS.GetVersion(context.Background(), &pb.GetVersionRequest{})
+
 	if err != nil {
 		cmd.PrintErrln("Error getting version: ", err)
+		return
+	} else {
+		//display version
+		cmd.Println("Version: ", response.Version)
 	}
-	//display version
-	cmd.Println("Version: ", response.Version)
 }

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -15,9 +16,9 @@ import (
 // currently stream can connect to the server and print the output of events to the stream
 var streamTests = []models.TestCase{
 	{
-		Name:           "No stream subcommand",
+		Name:           "No subcommand",
 		Args:           []string{"stream"},
-		ExpectedOutput: "", //TODO: Update expected output
+		ExpectedOutput: mock.CreateEventsFromPolicies([]string{""}), //TODO: Update expected output
 	},
 }
 
@@ -51,7 +52,7 @@ func TestStreamEvent(t *testing.T) {
 			if expectedEvents, ok := test.ExpectedOutput.([]*pb.StreamEventsResponse); ok {
 				// Split the actual output by newlines
 				actualEvents := strings.Split(strings.TrimSpace(buf.String()), "\n")
-
+				fmt.Println(buf.String())
 				// Check if the number of events match
 				if len(actualEvents) != len(expectedEvents) {
 					t.Errorf("Expected %d events, got %d", len(expectedEvents), len(actualEvents))
@@ -65,7 +66,7 @@ func TestStreamEvent(t *testing.T) {
 					}
 				}
 			} else {
-				t.Errorf("Type assertion failed, expected output is not []*pb.StreamEventsResponse")
+				t.Errorf("Type assertion failed, expected output is not []*pb.StreamEventsResponse: %v", test.ExpectedOutput)
 			}
 		})
 	}

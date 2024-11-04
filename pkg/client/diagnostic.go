@@ -33,6 +33,7 @@ func (tc *DiagnosticClient) NewDiagnosticClient(serverInfo ServerInfo) error {
 func (tc *DiagnosticClient) CloseConnection() {
 	if err := tc.conn.Close(); err != nil {
 		log.Printf("Failed to close connection: %v", err)
+		return
 	}
 }
 

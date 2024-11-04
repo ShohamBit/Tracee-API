@@ -32,6 +32,7 @@ func (tc *ServiceClient) NewServiceClient(serverInfo ServerInfo) error {
 func (tc *ServiceClient) CloseConnection() {
 	if err := tc.conn.Close(); err != nil {
 		log.Printf("Failed to close connection: %v", err)
+		return
 	}
 }
 
