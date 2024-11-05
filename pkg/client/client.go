@@ -33,15 +33,25 @@ func connectToServer(serverInfo ServerInfo) (*grpc.ClientConn, error) {
 	// Use switch case to determine connection type
 	var conn *grpc.ClientConn
 	var err error
-
 	switch serverInfo.ConnectionType {
 	case PROTOCOL_UNIX:
 		// Dial a Unix socket
-		conn, err = grpc.NewClient(fmt.Sprintf("unix://%s", serverInfo.UnixSocketPath), opts...)
+		address := fmt.Sprintf("unix://%s", serverInfo.UnixSocketPath)
+		conn, err = grpc.NewClient(address, opts...)
+
+		if err != nil {
+			log.Fatalf("failed to connect to server: %v", err)
+			return nil, err
+		}
 	case PROTOCOL_TCP:
 		// Dial a TCP address
 		address := fmt.Sprintf(serverInfo.ADDR)
 		conn, err = grpc.NewClient(address, opts...)
+
+		if err != nil {
+			log.Fatalf("failed to connect to server: %v", err)
+			return nil, err
+		}
 	default:
 		return nil, fmt.Errorf("unsupported connection type: %s", serverInfo.ConnectionType)
 	}

@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"github.com/ShohamBit/traceectl/pkg/client"
+	"github.com/ShohamBit/traceectl/pkg/cmd/formatter"
+	"github.com/ShohamBit/traceectl/pkg/cmd/printer"
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
 
-	"github.com/ShohamBit/traceectl/pkg/cmd/formatter"
 	"github.com/spf13/cobra"
 )
 
@@ -13,6 +15,7 @@ var streamCmd = &cobra.Command{
 	Use:   "stream [policies...]",
 	Short: "Stream events from tracee",
 	Long: `Stream Management:
+	- traceectl stream [POLICIES...] -  stream event directly from tracee
   	- traceectl stream create --name <stream_name> [--destination <destination>] [--format <format>] [--fields <fields>] [--parse-data] [--filter <filter>]
   	- traceectl stream describe <stream_name>
   	- traceectl stream list
@@ -117,69 +120,33 @@ var resumeStreamCmd = &cobra.Command{
 	},
 }
 
+// stream events directly from tracee
 func stream(cmd *cobra.Command, args []string) {
 	// Create service client
-	err := TCS.NewServiceClient(serverInfo)
+	var traceeClient client.ServiceClient
+	err := traceeClient.NewServiceClient(serverInfo)
 	if err != nil {
 		cmd.PrintErrln("Error creating client: ", err)
+		traceeClient.CloseConnection()
+		return
 	}
-	defer TCS.CloseConnection()
+	defer traceeClient.CloseConnection()
 
 	// create stream from client
 	req := &pb.StreamEventsRequest{Policies: args}
-	stream, err := TCS.StreamEvents(cmd.Context(), req)
+	stream, err := traceeClient.StreamEvents(cmd.Context(), req)
 	if err != nil {
 		cmd.PrintErrln("Error calling Stream: ", err)
-	}
-
-	//add check for the output flag
-	//TODO:support only table and json format for now
-	switch formatFlag {
-	case "json":
-		jsonStreamEvents(cmd, args, stream)
-	case "table":
-		tableStreamEvents(cmd, args, stream)
-	case "template": // go template
-		fallthrough
-	default:
-		cmd.PrintErrln("Error: output format not supported")
 		return
 	}
-}
 
-// tableStreamEvents prints events in a table format
-func tableStreamEvents(cmd *cobra.Command, _ []string, stream pb.TraceeService_StreamEventsClient) {
-	// Init table header before streaming starts
-	tbl := formatter.New(formatFlag, outputFlag, cmd)
-	tbl.PrintTableHeaders()
-	// Receive and process streamed responses
-	for {
-		res, err := stream.Recv()
-		if err != nil {
-			// Handle the error that occurs when the server closes the stream
-			if err.Error() == "EOF" {
-				break
-			}
-			cmd.PrintErrln("Error receiving streamed event: ", err)
-		}
-		tbl.PrintTableRow(res.Event)
-
+	//create formatter for output
+	format, err := formatter.New(formatFlag, outputFlag, cmd)
+	if err != nil {
+		cmd.PrintErrln("Error creating formatter: ", err)
+		return
 	}
-}
+	//show events
+	printer.StreamEvents(format, args, stream)
 
-// jsonStreamEvents prints events in json format
-func jsonStreamEvents(cmd *cobra.Command, _ []string, stream pb.TraceeService_StreamEventsClient) {
-	// Receive and process streamed responses
-	for {
-		res, err := stream.Recv()
-		if err != nil {
-			// Handle the error that occurs when the server closes the stream
-			if err.Error() == "EOF" {
-				break
-			}
-			cmd.PrintErrln("Error receiving streamed event: ", err)
-		}
-		// Print each event as a row in json format
-		formatter.PrintJSON(cmd, res.Event, outputFlag)
-	}
 }

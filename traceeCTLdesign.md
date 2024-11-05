@@ -1,3 +1,4 @@
+# TraceeCTL
 
 Policy Management:
   traceectl policy create <policy_file>
@@ -13,13 +14,13 @@ Event Management:
   traceectl event describe <event_name>
   traceectl event enable <event_name>
   traceectl event disable <event_name>
-  traceectl event run <event_name> [--args <arguments>]
+  traceectl event run <event_name> --args {\<arguments>}
 
 Stream Management:
-  traceectl stream create --name <stream_name> [--destination <destination>] [--format <format>] [--fields <fields>] [--parse-data] [--filter <filter>]
+  traceectl stream create --name <stream_name> [--destination \<destination>] [--format \<format>] [--fields \<fields>] [--parse-data] [--filter \<filter>]
   traceectl stream describe <stream_name>
   traceectl stream list
-  traceectl stream update <stream_name> [--destination <destination>] [--format <format>] [--fields <fields>] [--parse-data] [--filter <filter>]
+  traceectl stream update <stream_name> [--destination \<destination>] [--format \<format>] [--fields \<fields>] [--parse-data] [--filter \<filter>]
   traceectl stream delete <stream_name>
   traceectl stream connect <stream_name>
   traceectl stream set-default <stream_name>
@@ -33,11 +34,11 @@ Plugin Management:
 
 Additional Commands (Potential):
   traceectl connect [<stream_name>]
-  traceectl metrics [--output <format>]
+  traceectl metrics [--output \<format>]
   traceectl diagnose [--component <component_name>]
-  traceectl logs [--filter <filter>]
+  traceectl logs [--filter \<filter>]
   traceectl status
-  traceectl config [set|get|update] [<option>=<value>] [--file <config_file>]
+  traceectl config [set|get|update] [\<option>=\<value>] [--file <config_file>]
   traceectl version
 
 Profile Management:
@@ -46,7 +47,7 @@ Profile Management:
 Usage:
  traceectl [flags] [options]
 
- Use "traceectl <command> --help" for more information about a given command.
+ Use "traceectl \<command> --help" for more information about a given command.
  Use "traceectl options" for a list of global command-line options (applies to all commands).
 
 Flags (for client CLI):
@@ -59,11 +60,10 @@ Flags (for client CLI):
     -v, --v=0:
  number for the log level verbosity
 
-# =========================================================================================
+----
 
-# Detailed descriptions of commands
+## Detailed descriptions of commands
 
-# =========================================================================================
 **Policy Management:**
 
 * `traceectl policy create <policy_file>`
@@ -172,7 +172,7 @@ Flags (for client CLI):
 The `tracee` command would be a wrapper script that, by default, starts the `traceed` daemon in the background and then forwards the command and its arguments to the `traceectl` client.
 
 Example traceectl status output:
-
+//status
 Tracee Daemon Status:
     Status:        Running
     Uptime:        2h 35m 12s
@@ -180,12 +180,12 @@ Tracee Daemon Status:
     PID:           12345
     Memory Usage:  128 MB
     CPU Usage:     5%
-
+//metrics?
 Event Statistics:
     Total Events Captured: 15384
     Events Processed:      14212
     Events Dropped:        1172
-
+//policy
 Policy Summary:
     Number of Policies: 2
 

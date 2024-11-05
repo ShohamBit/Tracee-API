@@ -1,58 +1,12 @@
 package mock
 
 import (
-	"context"
-	"net"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/ShohamBit/traceectl/pkg/client"
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
-	"google.golang.org/grpc"
 )
-
-var (
-	ExpectedVersion string            = "v0.22.0-15-gd09d7fca0d" // Match the output format
-	serverInfo      client.ServerInfo = client.ServerInfo{
-		ADDR: client.DefaultIP + ":" + client.DefaultPort,
-	}
-)
-
-// MockServiceServer implements the gRPC server interface for testing
-type MockServiceServer struct {
-	pb.UnimplementedTraceeServiceServer // Embed the unimplemented server
-}
-
-// Start a mock gRPC server
-func StartMockServiceServer() (*grpc.Server, error) {
-	lis, err := net.Listen("tcp", serverInfo.ADDR)
-	if err != nil {
-		return nil, err
-	}
-
-	s := grpc.NewServer()
-	pb.RegisterTraceeServiceServer(s, &MockServiceServer{})
-
-	go func() {
-		if err := s.Serve(lis); err != nil {
-			// Handle the error (e.g., log it)
-		}
-	}()
-
-	return s, nil
-}
-
-func (s *MockServiceServer) GetVersion(ctx context.Context, req *pb.GetVersionRequest) (*pb.GetVersionResponse, error) {
-	// Return a mock version response
-	return &pb.GetVersionResponse{Version: ExpectedVersion}, nil
-}
-func (s *MockServiceServer) EnableEvent(ctx context.Context, req *pb.EnableEventRequest) (*pb.EnableEventResponse, error) {
-	return &pb.EnableEventResponse{}, nil
-}
-func (s *MockServiceServer) DisableEvent(ctx context.Context, req *pb.DisableEventRequest) (*pb.DisableEventResponse, error) {
-	return &pb.DisableEventResponse{}, nil
-}
 
 /*
 \stream events

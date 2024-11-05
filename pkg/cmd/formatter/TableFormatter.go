@@ -2,27 +2,15 @@ package formatter
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
+	"github.com/aquasecurity/table"
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
-	"github.com/spf13/cobra"
 )
 
-type Formatter struct {
-	format string
-	output string
-	cmd    *cobra.Command
-}
-
-func New(format string, output string, cmd *cobra.Command) *Formatter {
-	return &Formatter{
-		format: format,
-		output: output,
-		cmd:    cmd,
-	}
-}
-func (f *Formatter) PrintTableHeaders() {
-	f.cmd.Printf("%-15s %-25s %-15s %-15s %s\n",
+func (f *Formatter) PrintSteamTableHeaders() {
+	f.CMD.Printf("%-15s %-25s %-15s %-15s %s\n",
 		"TIME",
 		"EVENT NAME",
 		"POLICIES",
@@ -30,10 +18,10 @@ func (f *Formatter) PrintTableHeaders() {
 		"DATA",
 	)
 }
-func (f *Formatter) PrintTableRow(event *pb.Event) {
+func (f *Formatter) PrintStreamTableRow(event *pb.Event) {
 	timestamp := event.Timestamp.AsTime().Format("15:04:05.000")
 
-	f.cmd.Printf("%-15s %-25s %-15s %-15s %s\n",
+	f.CMD.Printf("%-15s %-25s %-15s %-15s %s\n",
 		timestamp,
 		event.Name,
 		strings.Join(event.Policies.Matched, ","),
@@ -42,10 +30,6 @@ func (f *Formatter) PrintTableRow(event *pb.Event) {
 	)
 
 }
-
-// func getEventContext(context *pb.Context) string {
-// 	return " "
-// }
 
 // generate event data
 func getEventData(data []*pb.EventValue) string {
@@ -87,4 +71,52 @@ func getEventValue(ev *pb.EventValue) string {
 		// if data type not supported yet
 		return "unknown"
 	}
+}
+
+func (f *Formatter) PrintEventDescription(response *pb.GetEventDefinitionsResponse) *table.Table {
+	tbl := table.New(os.Stdout)
+	tbl.SetHeaders("ID", "Name", "Version", "Description", "Tags", "Threat")
+	tbl.AddHeaders("ID", "Name", "Version", "Description", "Tags", "description", "mitre", "severity", "name", "properties")
+	tbl.SetHeaderColSpans(0, 1, 1, 1, 1, 1, 5)
+	tbl.SetAutoMergeHeaders(true)
+	for _, event := range response.Definitions {
+		// Check if the optional field Threat is set (non-nil)
+
+		if event.Threat != nil {
+			tbl.AddRow(
+				fmt.Sprintf("%d", event.Id),
+				event.Name,
+				fmt.Sprintf("%d.%d.%d", event.Version.Major, event.Version.Minor, event.Version.Patch),
+				event.Description,
+				strings.Join(event.Tags, ", "),
+				event.Threat.Description,
+				event.Threat.Mitre.String(),
+				event.Threat.Severity.String(),
+				event.Threat.Name,
+				mapToString(event.Threat.Properties),
+			)
+		} else {
+
+			tbl.AddRow(
+				fmt.Sprintf("%d", event.Id),
+				event.Name,
+				fmt.Sprintf("%d.%d.%d", event.Version.Major, event.Version.Minor, event.Version.Patch),
+				event.Description,
+				strings.Join(event.Tags, ", "),
+			)
+		}
+	}
+	return tbl
+}
+
+func mapToString(m map[string]string) string {
+	var builder strings.Builder
+	for key, value := range m {
+		builder.WriteString(fmt.Sprintf("%s: %s, ", key, value))
+	}
+	result := builder.String()
+	if len(result) > 0 {
+		result = result[:len(result)-2] // Remove the trailing ", "
+	}
+	return result
 }

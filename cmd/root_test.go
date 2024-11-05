@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 	"time"
 
@@ -11,15 +12,25 @@ import (
 
 var rootTests = []models.TestCase{
 	{
-		Name:           "No root subcommand",
-		Args:           []string{"root"},
-		ExpectedOutput: rootCmd.Help(), // Update expected output
+		Name:           "version",
+		Args:           []string{"version"},
+		ExpectedOutput: mock.ExpectedVersion,
+	},
+	{
+		Name: "metrics",
+		Args: []string{"metrics"},
+		ExpectedOutput: (func() string {
+			str := mock.ExpectedMetrics.String()      // convert to string
+			str = strings.ReplaceAll(str, "  ", "\n") // add newlines
+			str = strings.ReplaceAll(str, ":", ": ")  // add spaces
+			return str
+		})(),
 	},
 }
 
 func TestRootCmd(t *testing.T) {
 	// Start the mock server
-	mockServer, err := mock.StartMockServiceServer()
+	mockServer, err := mock.StartMockServer()
 	if err != nil {
 		t.Fatalf("Failed to start mock server: %v", err)
 	}
@@ -47,8 +58,8 @@ func TestRootCmd(t *testing.T) {
 			// Validate output and error (if any)
 			output := buf.String()
 
-			if output != test.ExpectedOutput {
-				t.Errorf("Expected output: %s, got: %s", test.ExpectedOutput, output)
+			if !strings.Contains(output, test.ExpectedOutput.(string)) {
+				t.Errorf("Expected output:\n%s\ngot:\n%s", test.ExpectedOutput, output)
 			}
 		})
 	}

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"github.com/ShohamBit/traceectl/pkg/client"
@@ -12,9 +11,7 @@ import (
 )
 
 var (
-	TCS        client.ServiceClient    // tracee service client
-	TCD        client.DiagnosticClient // tracee diagnostic  client
-	serverInfo client.ServerInfo       = client.ServerInfo{
+	serverInfo client.ServerInfo = client.ServerInfo{
 		ConnectionType: client.PROTOCOL_UNIX,
 		UnixSocketPath: client.SOCKET,
 		ADDR:           client.DefaultIP + ":" + client.DefaultPort,
@@ -56,7 +53,7 @@ func init() {
 	//unix connection type flag
 	rootCmd.PersistentFlags().StringVar(&serverInfo.UnixSocketPath, "socketPath", client.SOCKET, "Path of the unix socket")
 	//tcp connection type flag
-	rootCmd.PersistentFlags().StringVarP(&serverInfo.ADDR, "server", "s", client.DefaultIP+":"+client.DefaultPort, "he address and port of the Kubernetes API server")
+	rootCmd.PersistentFlags().StringVarP(&serverInfo.ADDR, "server", "s", client.DefaultIP+":"+client.DefaultPort, "The address and port of the Kubernetes API server")
 
 }
 
@@ -65,7 +62,6 @@ var connectCmd = &cobra.Command{
 	Short: "Connect to the server",
 	Long:  "Connects to a stream and displays events in real time.",
 	Run: func(cmd *cobra.Command, args []string) {
-
 	},
 }
 var metricsCmd = &cobra.Command{
@@ -104,7 +100,6 @@ var configCmd = &cobra.Command{
 	Short: "View or modify the Tracee Daemon configuration at runtime.",
 	Long:  `View or modify the Tracee Daemon configuration at runtime.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("config called")
 	},
 }
 
@@ -131,16 +126,18 @@ func GetRootCmd() *cobra.Command {
 
 // displayMetrics fetches and prints Tracee metrics
 func displayMetrics(cmd *cobra.Command, _ []string) {
-
+	var traceeClient client.DiagnosticClient
 	//create service client
-	if err := TCD.NewDiagnosticClient(serverInfo); err == nil {
+	if err := traceeClient.NewDiagnosticClient(serverInfo); err != nil {
 		cmd.PrintErrln("Error creating client: ", err)
+		return
 	}
-	defer TCD.CloseConnection()
+	defer traceeClient.CloseConnection()
 	//get metrics
-	response, err := TCD.GetMetrics(context.Background(), &pb.GetMetricsRequest{})
+	response, err := traceeClient.GetMetrics(context.Background(), &pb.GetMetricsRequest{})
 	if err != nil {
-		cmd.PrintErrln("Error getting version: ", err)
+		cmd.PrintErrln("Error getting metrics: ", err)
+		return
 	}
 
 	// Display the metrics
@@ -156,17 +153,20 @@ func displayMetrics(cmd *cobra.Command, _ []string) {
 }
 
 func displayVersion(cmd *cobra.Command, _ []string) {
-
 	//create service client
-	if err := TCS.NewServiceClient(serverInfo); err != nil {
+	var traceeClient client.ServiceClient
+	if err := traceeClient.NewServiceClient(serverInfo); err != nil {
 		cmd.PrintErrln("Error creating client: ", err)
 	}
-	defer TCS.CloseConnection()
+	defer traceeClient.CloseConnection()
 	//get version
-	response, err := TCS.GetVersion(context.Background(), &pb.GetVersionRequest{})
+	response, err := traceeClient.GetVersion(context.Background(), &pb.GetVersionRequest{})
+
 	if err != nil {
 		cmd.PrintErrln("Error getting version: ", err)
+		return
+	} else {
+		//display version
+		cmd.Println("Version: ", response.Version)
 	}
-	//display version
-	cmd.Println("Version: ", response.Version)
 }
