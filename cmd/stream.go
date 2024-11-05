@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/ShohamBit/traceectl/pkg/client"
 	"github.com/ShohamBit/traceectl/pkg/cmd/formatter"
 	"github.com/ShohamBit/traceectl/pkg/cmd/printer"
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
@@ -122,17 +123,18 @@ var resumeStreamCmd = &cobra.Command{
 // stream events directly from tracee
 func stream(cmd *cobra.Command, args []string) {
 	// Create service client
-	err := TCS.NewServiceClient(serverInfo)
+	var traceeClient client.ServiceClient
+	err := traceeClient.NewServiceClient(serverInfo)
 	if err != nil {
 		cmd.PrintErrln("Error creating client: ", err)
-		TCS.CloseConnection()
+		traceeClient.CloseConnection()
 		return
 	}
-	defer TCS.CloseConnection()
+	defer traceeClient.CloseConnection()
 
 	// create stream from client
 	req := &pb.StreamEventsRequest{Policies: args}
-	stream, err := TCS.StreamEvents(cmd.Context(), req)
+	stream, err := traceeClient.StreamEvents(cmd.Context(), req)
 	if err != nil {
 		cmd.PrintErrln("Error calling Stream: ", err)
 		return

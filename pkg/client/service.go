@@ -56,3 +56,6 @@ func (tc *ServiceClient) DisableEvent(ctx context.Context, req *pb.DisableEventR
 func (tc *ServiceClient) StreamEvents(ctx context.Context, req *pb.StreamEventsRequest) (pb.TraceeService_StreamEventsClient, error) {
 	return tc.client.StreamEvents(ctx, req)
 }
+func (tc *ServiceClient) GetEventDefinitions(ctx context.Context, req *pb.GetEventDefinitionsRequest) (*pb.GetEventDefinitionsResponse, error) {
+	return tc.client.GetEventDefinitions(ctx, req)
+}

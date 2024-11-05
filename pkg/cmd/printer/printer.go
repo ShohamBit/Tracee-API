@@ -25,7 +25,7 @@ func StreamEvents(format *formatter.Formatter, args []string, stream pb.TraceeSe
 // tableStreamEvents prints events in a table format
 func tableStreamEvents(_ []string, stream pb.TraceeService_StreamEventsClient, tbl *formatter.Formatter) {
 	// Init table header before streaming starts
-	tbl.PrintTableHeaders()
+	tbl.PrintSteamTableHeaders()
 	// Receive and process streamed responses
 	for {
 		res, err := stream.Recv()
@@ -36,7 +36,7 @@ func tableStreamEvents(_ []string, stream pb.TraceeService_StreamEventsClient, t
 			}
 			tbl.CMD.PrintErrln("Error receiving streamed event: ", err)
 		}
-		tbl.PrintTableRow(res.Event)
+		tbl.PrintStreamTableRow(res.Event)
 
 	}
 }
@@ -55,4 +55,14 @@ func jsonStreamEvents(_ []string, stream pb.TraceeService_StreamEventsClient, tb
 		// Print each event as a row in json format
 		tbl.PrintJSON(res.Event)
 	}
+}
+
+func DescribeEvent(format *formatter.Formatter, args []string, response *pb.GetEventDefinitionsResponse) {
+	//this can add support for other output formats
+	tableDescribeEvent(format, args, response)
+
+}
+func tableDescribeEvent(format *formatter.Formatter, _ []string, response *pb.GetEventDefinitionsResponse) {
+	tbl := format.PrintEventDescription(response)
+	tbl.Render()
 }
