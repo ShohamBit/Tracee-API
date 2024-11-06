@@ -1,7 +1,8 @@
 package models
 
 type TestCase struct {
-	Name           string
-	Args           []string
-	ExpectedOutput interface{}
+	TestName        string
+	OutputSlice     []string
+	ExpectedPrinter interface{}
+	ExpectedError   error
 }

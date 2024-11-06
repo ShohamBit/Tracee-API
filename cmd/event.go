@@ -38,7 +38,7 @@ func init() {
 	eventCmd.AddCommand(disableEventCmd)
 	eventCmd.AddCommand(runEventCmd)
 
-	runEventCmd.PersistentFlags().StringVar(&args, "args", "{}", "Arguments for the event")
+	runEventCmd.PersistentFlags().StringVar(&runCmdArgs, "args", "", "Arguments for the event")
 }
 
 // Sub commands
@@ -58,7 +58,7 @@ var describeEventCmd = &cobra.Command{
 	Use:   "describe <event_name>",
 	Short: "describe event",
 	Long:  `Retrieves the detailed definition of a specific event, including its fields, types, and other metadata.`,
-	Args:  cobra.MinimumNArgs(1),
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		getEventDescriptions(cmd, args)
 	},
@@ -69,9 +69,9 @@ var enableEventCmd = &cobra.Command{
 	Use:   "enable <event_name>",
 	Short: "enable event",
 	Long:  `Enables capturing of a specific event type.`,
-	Args:  cobra.MinimumNArgs(1),
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		enableEvents(cmd, args)
+		enableEvents(cmd, args[0])
 	},
 }
 
@@ -80,21 +80,25 @@ var disableEventCmd = &cobra.Command{
 	Use:   "disable <event_name>",
 	Short: "disable event",
 	Long:  `Disables capturing of a specific event type.`,
-	Args:  cobra.MinimumNArgs(1),
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		disableEvents(cmd, args)
-	}}
+		disableEvents(cmd, args[0])
+	},
+}
 
 // run
-var args string
+var runCmdArgs string
 var runEventCmd = &cobra.Command{
 	Use:   "run <event_name> [--args <arguments>]",
 	Short: "run event",
 	Long:  `Manually triggers a user-space event.`,
-	Args:  cobra.MinimumNArgs(1),
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		//runEvents(cmd, args)
+	},
 }
 
-func enableEvents(cmd *cobra.Command, eventNames []string) {
+func enableEvents(cmd *cobra.Command, eventName string) {
 	// Create Tracee gRPC client
 	var traceeClient client.ServiceClient // tracee client
 
@@ -104,33 +108,29 @@ func enableEvents(cmd *cobra.Command, eventNames []string) {
 	}
 
 	// Iterate over event names and enable each one
-	for _, eventName := range eventNames {
-		_, err := traceeClient.EnableEvent(context.Background(), &pb.EnableEventRequest{Name: eventName})
-		if err != nil {
-			cmd.PrintErrln("Error enabling event:", err)
-			continue // Continue on error with the next event
-		}
-		cmd.Println("Enabled event:", eventName)
+
+	_, err := traceeClient.EnableEvent(context.Background(), &pb.EnableEventRequest{Name: eventName})
+	if err != nil {
+		cmd.PrintErrln("Error enabling event:", err)
+		return
 	}
+	cmd.Printf("Enabled event: %s\n", eventName)
 }
 
-func disableEvents(cmd *cobra.Command, eventNames []string) {
+func disableEvents(cmd *cobra.Command, eventName string) {
 	// Create Tracee gRPC client
 	var traceeClient client.ServiceClient
 	if err := traceeClient.NewServiceClient(serverInfo); err != nil {
 		cmd.PrintErrln("Error creating client: ", err)
 		return // Exit on error
 	}
-
-	// Iterate over event names and disable each one
-	for _, eventName := range eventNames {
-		_, err := traceeClient.DisableEvent(context.Background(), &pb.DisableEventRequest{Name: eventName})
-		if err != nil {
-			cmd.PrintErrln("Error disabling event:", err)
-			continue // Continue on error with the next event
-		}
-		cmd.Println("Disabled event:", eventName)
+	_, err := traceeClient.DisableEvent(context.Background(), &pb.DisableEventRequest{Name: eventName})
+	if err != nil {
+		cmd.PrintErrln("Error disabling event:", err)
+		return
 	}
+	cmd.Printf("Disabled event: %s\n", eventName)
+
 }
 
 func getEventDescriptions(cmd *cobra.Command, args []string) {
