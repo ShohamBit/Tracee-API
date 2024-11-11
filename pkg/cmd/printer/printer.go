@@ -62,10 +62,8 @@ func ListEvents(format *formatter.Formatter, args []string, response *pb.GetEven
 	switch format.Format {
 	case formatter.FormatJSON:
 		jsonListEvent(format, args, response)
-		return
 	case formatter.FormatTable:
 		tableListEvent(format, args, response)
-		return
 	case formatter.FormatGoTpl: // gotemplate
 		fallthrough
 	default:
