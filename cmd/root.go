@@ -10,6 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var formatFlag string
+var outputFlag string
 var (
 	serverInfo client.ServerInfo = client.ServerInfo{
 		ConnectionType: client.PROTOCOL_UNIX,
@@ -117,11 +119,6 @@ func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
-}
-
-// expose root command
-func GetRootCmd() *cobra.Command {
-	return rootCmd
 }
 
 // displayMetrics fetches and prints Tracee metrics

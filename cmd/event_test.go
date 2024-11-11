@@ -1,81 +1,75 @@
 package cmd
 
 import (
-	"bytes"
+	"fmt"
 	"testing"
-	"time"
 
-	"github.com/ShohamBit/traceectl/pkg/mock"
+	"github.com/ShohamBit/traceectl/pkg/cmd/test"
 	"github.com/ShohamBit/traceectl/pkg/models"
 )
 
-var eventTests = []models.TestCase{
-	{
-		Name:           "No enable events",
-		Args:           []string{"event", "enable"},
-		ExpectedOutput: "Error: requires at least 1 arg(s), only received 0\n", // Update expected output
-	},
-	{
-		Name:           "Single enable event",
-		Args:           []string{"event", "enable", "event1"},
-		ExpectedOutput: "Enabled event: event1\n",
-	},
-	{
-		Name:           "Multiple enable events",
-		Args:           []string{"event", "enable", "event1", "event2"},
-		ExpectedOutput: "Enabled event: event1\nEnabled event: event2\n",
-	},
-
-	{
-		Name:           "No disable events",
-		Args:           []string{"event", "disable"},
-		ExpectedOutput: "Error: requires at least 1 arg(s), only received 0\n", // Update expected output
-	},
-	{
-		Name:           "Single disable event",
-		Args:           []string{"event", "disable", "event1"},
-		ExpectedOutput: "Disabled event: event1\n",
-	},
-	{
-		Name:           "Multiple disable events",
-		Args:           []string{"event", "disable", "event1", "event2"},
-		ExpectedOutput: "Disabled event: event1\nDisabled event: event2\n",
-	},
-}
-
 func TestEvent(t *testing.T) {
-	// Start the mock server
-	mockServer, err := mock.StartMockServer()
-	if err != nil {
-		t.Fatalf("Failed to start mock server: %v", err)
+	eventTests := []models.TestCase{
+		{
+			TestName:        "event",
+			OutputSlice:     []string{"event"},
+			ExpectedPrinter: nil,
+			ExpectedError:   fmt.Errorf("requires at least 1 arg(s), only received 0"),
+		},
+
+		//event list
+		{
+			TestName:        "events list",
+			OutputSlice:     []string{"event", "list", "--format", "json"},
+			ExpectedPrinter: "",
+			ExpectedError:   nil,
+		},
+
+		//event describe
+		{
+			TestName:        "No events describe",
+			OutputSlice:     []string{"event", "describe", "--format", "json"},
+			ExpectedPrinter: "",
+			ExpectedError:   fmt.Errorf("accepts 1 arg(s), received 0"),
+		},
+		{
+			TestName:        "event describe event",
+			OutputSlice:     []string{"event", "describe", "event_test1", "--format", "json"},
+			ExpectedPrinter: "event_test1",
+			ExpectedError:   nil,
+		},
+		//event enable
+		{
+			TestName:        "No  events enable",
+			OutputSlice:     []string{"event", "enable"},
+			ExpectedPrinter: "",
+			ExpectedError:   fmt.Errorf("accepts 1 arg(s), received 0"), // Update expected output
+
+		},
+		{
+			TestName:        "enable event",
+			OutputSlice:     []string{"event", "enable", "event"},
+			ExpectedPrinter: "Enabled event: event",
+			ExpectedError:   nil,
+		},
+		//event disable
+		{
+			TestName:        "No disable events",
+			OutputSlice:     []string{"event", "disable"},
+			ExpectedPrinter: "",
+			ExpectedError:   fmt.Errorf("accepts 1 arg(s), received 0"), // Update expected output
+		},
+		{
+			TestName:        "disable event",
+			OutputSlice:     []string{"event", "disable", "event"},
+			ExpectedPrinter: "Disabled event: event",
+			ExpectedError:   nil,
+		},
+		//event run
+		//TODO: add test when support run is added
 	}
-	defer mockServer.Stop() // Ensure the server is stopped after the test
 
-	// Wait for the server to start
-	time.Sleep(100 * time.Millisecond)
-
-	for _, test := range eventTests {
-		t.Run(test.Name, func(t *testing.T) {
-			// Capture output
-			var buf bytes.Buffer
-			rootCmd := GetRootCmd()
-			rootCmd.SetOut(&buf)
-			rootCmd.SetErr(&buf)
-
-			// Set arguments for the test
-			rootCmd.SetArgs(test.Args)
-
-			// Execute the command
-			if err := rootCmd.Execute(); err != nil {
-				t.Error(t, err)
-			}
-
-			// Validate output and error (if any)
-			output := buf.String()
-
-			if output != test.ExpectedOutput {
-				t.Errorf("Expected output: %s, got: %s", test.ExpectedOutput, output)
-			}
-		})
+	for _, testCase := range eventTests {
+		t.Run(testCase.TestName, func(t *testing.T) { test.TestCommand(t, testCase, rootCmd) })
 	}
 }

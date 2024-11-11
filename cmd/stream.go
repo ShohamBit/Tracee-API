@@ -9,8 +9,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var formatFlag string
-var outputFlag string
+var streamFormatFlag string
+var streamOutputFlag string
 var streamCmd = &cobra.Command{
 	Use:   "stream [policies...]",
 	Short: "Stream events from tracee",
@@ -43,9 +43,9 @@ func init() {
 	streamCmd.AddCommand(pauseStreamCmd)
 	streamCmd.AddCommand(resumeStreamCmd)
 	//stream events flags
-	streamCmd.Flags().StringVarP(&formatFlag, "format", "f", "json", "Output format (json[default]|table|template) currently only support table")
+	streamCmd.Flags().StringVarP(&streamFormatFlag, "format", "f", formatter.FormatJSON, "Output format (json|table|template)")
 	// only support stdout for now
-	streamCmd.Flags().StringVarP(&outputFlag, "output", "o", "stdout", "Output destination ")
+	streamCmd.Flags().StringVarP(&streamOutputFlag, "output", "o", "stdout", "Output destination ")
 }
 
 var createStreamCmd = &cobra.Command{
@@ -141,7 +141,7 @@ func stream(cmd *cobra.Command, args []string) {
 	}
 
 	//create formatter for output
-	format, err := formatter.New(formatFlag, outputFlag, cmd)
+	format, err := formatter.New(streamFormatFlag, outputFlag, cmd)
 	if err != nil {
 		cmd.PrintErrln("Error creating formatter: ", err)
 		return
