@@ -1,4 +1,4 @@
-package cmd
+package test
 
 import (
 	"bytes"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/ShohamBit/traceectl/pkg/mock"
 	"github.com/ShohamBit/traceectl/pkg/models"
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
 )
@@ -22,13 +23,12 @@ func runMockServer(t *testing.T) *grpc.Server {
 	time.Sleep(100 * time.Millisecond)
 	return mockServer
 }
-func TestCommand(t *testing.T, testCase models.TestCase) {
+func TestCommand(t *testing.T, testCase models.TestCase, rootCmd *cobra.Command) {
 	server := runMockServer(t)
 	defer server.Stop() // Ensure the server is stopped after the test
 
 	// Capture output
 	var buf bytes.Buffer
-	rootCmd := GetRootCmd()
 	rootCmd.SetOut(&buf)
 	rootCmd.SetErr(&buf)
 

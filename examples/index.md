@@ -6,8 +6,14 @@ __NOTE:__ tracee config file doesn't support: policy, scope, event & capture
 
 ``` bash
 Tracee \
---config ../path/to/config/config{your connection type}.yaml \
---policy ../path/to/policies 
+--config ./path/to/config/config{your connection type}.yaml \
+--policy ./path/to/policies 
+```
+run this 
+``` bash
+sudo ./dist/tracee \
+--config ../traceectl/examples/configUnix.yaml \
+--policy ../traceectl/examples/policies 
 ```
 
 ## run client

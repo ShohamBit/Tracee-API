@@ -1,5 +1,6 @@
 package cmd
 
+//TODO:
 import (
 	"context"
 
@@ -10,16 +11,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var eventFormatFlag string
+var eventOutputFlag string
+
 // main command
 var eventCmd = &cobra.Command{
-	Use:   "event <command>",
-	Short: "event management for traceectl",
-	Long: `Event Management: 
-	- traceectl event list 
-	- traceectl event describe <event_name> 
-	- traceectl event enable <event_name>
-	- traceectl event disable <event_name>
-	- traceectl event run <event_name> [--args ]
+	Use:   "event [command]",
+	Short: "event management for tracee",
+	Long: `Event Management for tracee 
+	let you enable and disable events in tracee.
+	get descriptions of events and run them.
 	`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
@@ -39,6 +40,12 @@ func init() {
 	eventCmd.AddCommand(runEventCmd)
 
 	runEventCmd.PersistentFlags().StringVar(&runCmdArgs, "args", "", "Arguments for the event")
+
+	listEventCmd.Flags().StringVarP(&eventFormatFlag, "format", "f", formatter.FormatTable, "Output format (json|table|template) ")
+	listEventCmd.Flags().StringVarP(&eventOutputFlag, "output", "o", "stdout", "Output destination ")
+
+	describeEventCmd.Flags().StringVarP(&eventFormatFlag, "format", "f", formatter.FormatTable, "Output format (json|table|template) ")
+	describeEventCmd.Flags().StringVarP(&eventOutputFlag, "output", "o", "stdout", "Output destination ")
 }
 
 // Sub commands
@@ -47,9 +54,9 @@ var listEventCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list events",
 	Long:  `Lists all available event definitions (built-in and plugin-defined), providing a brief summary of each.`,
-	Args:  cobra.MinimumNArgs(0),
+	Args:  cobra.MaximumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-
+		listEvents(cmd, args)
 	},
 }
 
@@ -98,6 +105,55 @@ var runEventCmd = &cobra.Command{
 	},
 }
 
+func listEvents(cmd *cobra.Command, args []string) {
+	//create service client
+	var traceeClient client.ServiceClient
+	if err := traceeClient.NewServiceClient(serverInfo); err != nil {
+		cmd.PrintErrln("Error creating client: ", err)
+	}
+	defer traceeClient.CloseConnection()
+	response, err := traceeClient.GetEventDefinitions(context.Background(), &pb.GetEventDefinitionsRequest{EventNames: args})
+
+	if err != nil {
+		cmd.PrintErrln("Error getting event definitions: ", err)
+		return
+
+	}
+	//display event definitions
+	//TODO:  add support for different outputs and formats
+	format, err := formatter.New(eventFormatFlag, outputFlag, cmd)
+	if err != nil {
+		cmd.PrintErrln("Error creating formatter: ", err)
+		return
+	}
+	//show events
+	printer.ListEvents(format, args, response)
+}
+func getEventDescriptions(cmd *cobra.Command, args []string) {
+	//create service client
+	var traceeClient client.ServiceClient
+	if err := traceeClient.NewServiceClient(serverInfo); err != nil {
+		cmd.PrintErrln("Error creating client: ", err)
+	}
+	defer traceeClient.CloseConnection()
+	response, err := traceeClient.GetEventDefinitions(context.Background(), &pb.GetEventDefinitionsRequest{EventNames: args})
+
+	if err != nil {
+		cmd.PrintErrln("Error getting event definitions: ", err)
+		return
+
+	}
+	//display event definitions
+	//TODO:  add support for different outputs and formats
+	format, err := formatter.New(eventFormatFlag, outputFlag, cmd)
+	if err != nil {
+		cmd.PrintErrln("Error creating formatter: ", err)
+		return
+	}
+	//show events
+	printer.DescribeEvent(format, args, response)
+
+}
 func enableEvents(cmd *cobra.Command, eventName string) {
 	// Create Tracee gRPC client
 	var traceeClient client.ServiceClient // tracee client
@@ -130,31 +186,5 @@ func disableEvents(cmd *cobra.Command, eventName string) {
 		return
 	}
 	cmd.Printf("Disabled event: %s\n", eventName)
-
-}
-
-func getEventDescriptions(cmd *cobra.Command, args []string) {
-	//create service client
-	var traceeClient client.ServiceClient
-	if err := traceeClient.NewServiceClient(serverInfo); err != nil {
-		cmd.PrintErrln("Error creating client: ", err)
-	}
-	defer traceeClient.CloseConnection()
-	response, err := traceeClient.GetEventDefinitions(context.Background(), &pb.GetEventDefinitionsRequest{EventNames: args})
-
-	if err != nil {
-		cmd.PrintErrln("Error getting event definitions: ", err)
-		return
-
-	}
-	//display event definitions
-	//don't support different outputs and formats
-	format, err := formatter.New("table", "", cmd)
-	if err != nil {
-		cmd.PrintErrln("Error creating formatter: ", err)
-		return
-	}
-	//show events
-	printer.DescribeEvent(format, args, response)
 
 }

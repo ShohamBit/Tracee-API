@@ -53,16 +53,53 @@ func jsonStreamEvents(_ []string, stream pb.TraceeService_StreamEventsClient, tb
 			tbl.CMD.PrintErrln("Error receiving streamed event: ", err)
 		}
 		// Print each event as a row in json format
-		tbl.PrintJSON(res.Event)
+		tbl.PrintStreamJSON(res.Event)
 	}
 }
 
-func DescribeEvent(format *formatter.Formatter, args []string, response *pb.GetEventDefinitionsResponse) {
+func ListEvents(format *formatter.Formatter, args []string, response *pb.GetEventDefinitionsResponse) {
 	//this can add support for other output formats
-	tableDescribeEvent(format, args, response)
+	switch format.Format {
+	case formatter.FormatJSON:
+		jsonListEvent(format, args, response)
+		return
+	case formatter.FormatTable:
+		tableListEvent(format, args, response)
+		return
+	case formatter.FormatGoTpl: // gotemplate
+		fallthrough
+	default:
+		format.CMD.PrintErrln("Error: output format not supported")
+		return
+	}
 
 }
+func tableListEvent(format *formatter.Formatter, _ []string, response *pb.GetEventDefinitionsResponse) {
+	tbl := format.PrintEventListTable(response)
+	tbl.Render()
+}
+func jsonListEvent(format *formatter.Formatter, _ []string, response *pb.GetEventDefinitionsResponse) {
+	format.PrintEventListJSON(response)
+}
+func DescribeEvent(format *formatter.Formatter, args []string, response *pb.GetEventDefinitionsResponse) {
+	//this can add support for other output formats
+	switch format.Format {
+	case formatter.FormatJSON:
+		jsonDescribeEvent(format, args, response)
+	case formatter.FormatTable:
+		tableDescribeEvent(format, args, response)
+	case formatter.FormatGoTpl: // gotemplate
+		fallthrough
+	default:
+		format.CMD.PrintErrln("Error: output format not supported")
+		return
+	}
+
+}
+func jsonDescribeEvent(format *formatter.Formatter, _ []string, response *pb.GetEventDefinitionsResponse) {
+	format.PrintEventDescriptionJSON(response)
+}
 func tableDescribeEvent(format *formatter.Formatter, _ []string, response *pb.GetEventDefinitionsResponse) {
-	tbl := format.PrintEventDescription(response)
+	tbl := format.PrintEventDescriptionTable(response)
 	tbl.Render()
 }
