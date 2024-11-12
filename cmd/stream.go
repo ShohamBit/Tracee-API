@@ -141,7 +141,7 @@ func stream(cmd *cobra.Command, args []string) {
 	}
 
 	//create formatter for output
-	format, err := formatter.New(streamFormatFlag, outputFlag, cmd)
+	format, err := formatter.New(streamFormatFlag, streamOutputFlag, cmd)
 	if err != nil {
 		cmd.PrintErrln("Error creating formatter: ", err)
 		return

@@ -3,10 +3,12 @@ package formatter
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/aquasecurity/table"
 	pb "github.com/aquasecurity/tracee/api/v1beta1"
+	"github.com/spf13/cobra"
 )
 
 func (f *Formatter) PrintSteamTableHeaders() {
@@ -74,7 +76,7 @@ func getEventValue(ev *pb.EventValue) string {
 }
 
 func (f *Formatter) PrintEventListTable(response *pb.GetEventDefinitionsResponse) *table.Table {
-	tbl := table.New(os.Stdout)
+	tbl := createTable(f)
 	tbl.SetHeaders("ID", "Name", "Version", "Tags")
 	for _, event := range response.Definitions {
 		// Check if the optional field Threat is set (non-nil)
@@ -91,7 +93,7 @@ func (f *Formatter) PrintEventListTable(response *pb.GetEventDefinitionsResponse
 }
 
 func (f *Formatter) PrintEventDescriptionTable(response *pb.GetEventDefinitionsResponse) *table.Table {
-	tbl := table.New(os.Stdout)
+	tbl := createTable(f)
 	tbl.SetHeaders("ID", "Name", "Version", "Tags", "Description")
 	for _, event := range response.Definitions {
 		// Check if the optional field Threat is set (non-nil)
@@ -106,4 +108,37 @@ func (f *Formatter) PrintEventDescriptionTable(response *pb.GetEventDefinitionsR
 
 	}
 	return tbl
+}
+
+func createTable(f *Formatter) *table.Table {
+	if (f.Output != "") && (f.Output != "stdout") {
+		/// Validate the file path
+		if f.Output == "" || strings.TrimSpace(f.Output) == "" {
+			fmt.Errorf("Output file path is empty or invalid")
+			return nil
+		}
+
+		// Ensure parent directories exist
+		dir := filepath.Dir(f.Output)
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			fmt.Errorf("failed to create directories for output file: %v", err)
+			return nil
+		}
+
+		// Create or open the file
+		file, err := os.Create(f.Output)
+		if err != nil {
+			fmt.Errorf("failed to open output file: %v", err)
+			return nil
+		}
+		tbl := table.New(file)
+		// Make sure to close the file after execution
+		f.CMD.PersistentPostRun = func(cmd *cobra.Command, args []string) {
+			file.Close()
+		}
+		return tbl
+	} else {
+		return table.New(os.Stdout)
+	}
+
 }

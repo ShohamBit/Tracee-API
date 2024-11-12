@@ -10,8 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var formatFlag string
-var outputFlag string
+// var outputFlag string
 var (
 	serverInfo client.ServerInfo = client.ServerInfo{
 		ConnectionType: client.PROTOCOL_UNIX,
@@ -56,6 +55,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&serverInfo.UnixSocketPath, "socketPath", client.SOCKET, "Path of the unix socket")
 	//tcp connection type flag
 	rootCmd.PersistentFlags().StringVarP(&serverInfo.ADDR, "server", "s", client.DefaultIP+":"+client.DefaultPort, "The address and port of the Kubernetes API server")
+	//rootCmd.PersistentFlags().StringVarP(&outputFlag, "output", "o", "", "Specify the output file path (default is stdout)") //if empty stdout
 
 }
 
