@@ -121,7 +121,7 @@ func listEvents(cmd *cobra.Command, args []string) {
 	}
 	//display event definitions
 	//TODO:  add support for different outputs and formats
-	format, err := formatter.New(eventFormatFlag, outputFlag, cmd)
+	format, err := formatter.New(eventFormatFlag, eventOutputFlag, cmd)
 	if err != nil {
 		cmd.PrintErrln("Error creating formatter: ", err)
 		return
@@ -145,7 +145,7 @@ func getEventDescriptions(cmd *cobra.Command, args []string) {
 	}
 	//display event definitions
 	//TODO:  add support for different outputs and formats
-	format, err := formatter.New(eventFormatFlag, outputFlag, cmd)
+	format, err := formatter.New(eventFormatFlag, eventOutputFlag, cmd)
 	if err != nil {
 		cmd.PrintErrln("Error creating formatter: ", err)
 		return
