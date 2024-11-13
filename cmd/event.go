@@ -110,6 +110,7 @@ func listEvents(cmd *cobra.Command, args []string) {
 	var traceeClient client.ServiceClient
 	if err := traceeClient.NewServiceClient(serverInfo); err != nil {
 		cmd.PrintErrln("Error creating client: ", err)
+		return
 	}
 	defer traceeClient.CloseConnection()
 	response, err := traceeClient.GetEventDefinitions(context.Background(), &pb.GetEventDefinitionsRequest{EventNames: args})
@@ -134,6 +135,7 @@ func getEventDescriptions(cmd *cobra.Command, args []string) {
 	var traceeClient client.ServiceClient
 	if err := traceeClient.NewServiceClient(serverInfo); err != nil {
 		cmd.PrintErrln("Error creating client: ", err)
+		return
 	}
 	defer traceeClient.CloseConnection()
 	response, err := traceeClient.GetEventDefinitions(context.Background(), &pb.GetEventDefinitionsRequest{EventNames: args})

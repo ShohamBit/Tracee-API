@@ -127,7 +127,6 @@ func stream(cmd *cobra.Command, args []string) {
 	err := traceeClient.NewServiceClient(serverInfo)
 	if err != nil {
 		cmd.PrintErrln("Error creating client: ", err)
-		traceeClient.CloseConnection()
 		return
 	}
 	defer traceeClient.CloseConnection()

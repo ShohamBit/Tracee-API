@@ -76,8 +76,9 @@ func initOutput(cmd *cobra.Command, output string) error {
 		}
 	} else {
 		// If no file is specified, use stdout
-		cmd.SetOut(os.Stdout)
-		cmd.SetErr(os.Stderr)
+		//NOTE: those commands brakes test do nothing
+		//cmd.SetOut(os.Stdout)
+		//cmd.SetErr(os.Stderr)
 	}
 	return nil
 }

@@ -29,20 +29,20 @@ func TestEvent(t *testing.T) {
 		{
 			TestName:        "No events describe",
 			OutputSlice:     []string{"event", "describe", "--format", "json"},
-			ExpectedPrinter: "",
+			ExpectedPrinter: nil,
 			ExpectedError:   fmt.Errorf("accepts 1 arg(s), received 0"),
 		},
 		{
-			TestName:        "event describe event",
+			TestName:        "describe <event_test1>",
 			OutputSlice:     []string{"event", "describe", "event_test1", "--format", "json"},
 			ExpectedPrinter: "event_test1",
 			ExpectedError:   nil,
 		},
 		//event enable
 		{
-			TestName:        "No  events enable",
+			TestName:        "No events enable",
 			OutputSlice:     []string{"event", "enable"},
-			ExpectedPrinter: "",
+			ExpectedPrinter: nil,
 			ExpectedError:   fmt.Errorf("accepts 1 arg(s), received 0"), // Update expected output
 
 		},
@@ -56,7 +56,7 @@ func TestEvent(t *testing.T) {
 		{
 			TestName:        "No disable events",
 			OutputSlice:     []string{"event", "disable"},
-			ExpectedPrinter: "",
+			ExpectedPrinter: nil,
 			ExpectedError:   fmt.Errorf("accepts 1 arg(s), received 0"), // Update expected output
 		},
 		{
