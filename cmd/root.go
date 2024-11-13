@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/ShohamBit/traceectl/pkg/client"
@@ -10,12 +11,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// var outputFlag string
+var formatFlag string
+var outputFlag string
+var serverFlag string
 var (
 	serverInfo client.ServerInfo = client.ServerInfo{
 		ConnectionType: client.PROTOCOL_UNIX,
-		UnixSocketPath: client.SOCKET,
-		ADDR:           client.DefaultIP + ":" + client.DefaultPort,
+		ADDR:           client.SOCKET,
 	}
 
 	rootCmd = &cobra.Command{
@@ -45,17 +47,13 @@ func init() {
 	rootCmd.AddCommand(configCmd)
 	rootCmd.AddCommand(versionCmd)
 
-	//flags
-	rootCmd.PersistentFlags().StringVarP(&serverInfo.ConnectionType, "connectionType", "c", client.PROTOCOL_UNIX, "Connection type (unix|tcp)")
-	rootCmd.RegisterFlagCompletionFunc("connectionType", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{client.PROTOCOL_TCP, client.PROTOCOL_UNIX}, cobra.ShellCompDirectiveNoFileComp
-	})
-	//TODO: add an option to ony use this flag par connection type
-	//unix connection type flag
-	rootCmd.PersistentFlags().StringVar(&serverInfo.UnixSocketPath, "socketPath", client.SOCKET, "Path of the unix socket")
-	//tcp connection type flag
-	rootCmd.PersistentFlags().StringVarP(&serverInfo.ADDR, "server", "s", client.DefaultIP+":"+client.DefaultPort, "The address and port of the Kubernetes API server")
-	//rootCmd.PersistentFlags().StringVarP(&outputFlag, "output", "o", "", "Specify the output file path (default is stdout)") //if empty stdout
+	//one global flag for server connection(connection Type: tcp or unix socket)
+	//no default for tcp, only for unix socket
+	//for tcp <IP:Port>
+	//for unix socket <socket_path>
+	rootCmd.PersistentFlags().StringVar(&serverInfo.ADDR, "server", fmt.Sprintf("%s", client.SOCKET), `Server connection path or address.
+	for unix socket <socket_path> (default: /tmp/tracee.sock)
+	for tcp <IP:Port>`)
 
 }
 
@@ -154,6 +152,7 @@ func displayVersion(cmd *cobra.Command, _ []string) {
 	var traceeClient client.ServiceClient
 	if err := traceeClient.NewServiceClient(serverInfo); err != nil {
 		cmd.PrintErrln("Error creating client: ", err)
+		return
 	}
 	defer traceeClient.CloseConnection()
 	//get version
